@@ -8,7 +8,8 @@
     "start": "node dev.mjs"
   },
   "dependencies": {
-    "@kibologic/core": "latest",
-    "@kibologic/swite": "latest"
+    "@kibologic/core": "0.1.6",
+    "@kibologic/swite": "latest",
+    "reflect-metadata": "^0.2.2"
   }
 }
