@@ -1,0 +1,4 @@
+import { mount } from '@kibologic/core';
+import { LandingPage } from './pages/LandingPage.uix';
+
+mount(LandingPage, document.getElementById('app'));
