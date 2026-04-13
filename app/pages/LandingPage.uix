@@ -10,14 +10,104 @@ component LandingPage {
   state { let emailError: string = ''; }
   state { let mobileMenuOpen: boolean = false; }
   state { let activeSection: string = ''; }
+  state { let theme: 'light' | 'dark' = 'light'; }
   state { let _observer: any = null; }
 
   mounted() {
-    // Inject smooth scroll globally
-    if (!document.getElementById('alp-smooth-scroll')) {
+    // Determine initial theme
+    const savedTheme = localStorage.getItem('alpine-theme') as 'light' | 'dark' | null;
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    this.theme = savedTheme || systemTheme;
+    document.documentElement.setAttribute('data-theme', this.theme);
+
+    // Inject brand tokens and smooth scroll
+    if (!document.getElementById('alp-brand-styles')) {
       const s = document.createElement('style');
-      s.id = 'alp-smooth-scroll';
-      s.textContent = 'html { scroll-behavior: smooth; } * { box-sizing: border-box; margin: 0; padding: 0; }';
+      s.id = 'alp-brand-styles';
+      s.textContent = `
+        html { scroll-behavior: smooth; transition: background-color 0.3s ease; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        .desktop-only { display: flex; }
+        .mobile-only { display: none; }
+        @media (max-width: 860px) {
+          .desktop-only { display: none !important; }
+          .mobile-only { display: flex !important; }
+        }
+
+        .grid-3-to-1 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .grid-2-to-1 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 80px; }
+        .grid-4-to-2-to-1 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        @media (max-width: 1024px) {
+          .grid-4-to-2-to-1 { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 860px) {
+          .grid-3-to-1, .grid-2-to-1, .grid-4-to-2-to-1 { grid-template-columns: 1fr; }
+          .grid-2-to-1 { gap: 48px; }
+        }
+
+        :root {
+          /* Official Alpine ERP Scale */
+          --color-snow-50:  #FAFCFF;
+          --color-snow-100: #F4F7FB;
+          --color-snow-200: #E8EFF7;
+          --color-snow-300: #D6E2EF;
+          --color-snow-400: #B8CEDE;
+          
+          --color-slate-500: #7A8499;
+          --color-slate-700: #3D4559;
+          --color-slate-900: #1A2035;
+          
+          --color-alpine-400: #4A9E58;
+          --color-alpine-500: #2D7A3A;
+          --color-alpine-600: #1D5C28;
+
+          --brand-green: var(--color-alpine-500);
+          --brand-green-light: var(--color-alpine-400);
+        }
+
+        /* LIGHT THEME */
+        [data-theme="light"], :root:not([data-theme="dark"]) {
+          --brand-navy: var(--color-slate-900);
+          --brand-navy-dark: #080a11;
+          --brand-border: var(--color-snow-300);
+          --brand-bg-page: var(--color-snow-50);
+          --brand-bg-subtle: var(--color-snow-100);
+          --brand-bg-surface: #ffffff;
+          --brand-bg-inverse: var(--color-slate-900);
+          --brand-text-primary: var(--color-slate-900);
+          --brand-text-body: var(--color-slate-700);
+          --brand-text-muted: var(--color-slate-500);
+          --brand-text-inverse: #ffffff;
+          --brand-shadow: 0 4px 24px rgba(0,0,0,0.06);
+
+          /* Mockup Tokens */
+          --mockup-sb-bg: var(--color-slate-900);
+          --mockup-sb-text: rgba(255,255,255,0.6);
+          --mockup-sb-active: rgba(255,255,255,0.1);
+        }
+
+        /* DARK THEME */
+        [data-theme="dark"] {
+          --brand-navy: #ffffff;
+          --brand-navy-dark: #05070a;
+          --brand-border: rgba(255,255,255,0.1);
+          --brand-bg-page: #0a0a0a;
+          --brand-bg-subtle: #111111;
+          --brand-bg-surface: #161616;
+          --brand-bg-inverse: #ffffff;
+          --brand-text-primary: #f8f9fa;
+          --brand-text-body: #d1d5db;
+          --brand-text-muted: #9ca3af;
+          --brand-text-inverse: #0a0a0a;
+          --brand-shadow: 0 4px 24px rgba(0,0,0,0.4);
+
+          /* Mockup Tokens */
+          --mockup-sb-bg: #05070a;
+          --mockup-sb-text: rgba(255,255,255,0.4);
+          --mockup-sb-active: rgba(255,255,255,0.06);
+        }
+      `;
       document.head.appendChild(s);
     }
 
@@ -57,6 +147,18 @@ component LandingPage {
     this.scheduleUpdate?.();
   }
 
+  toggleTheme() {
+    this.theme = this.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', this.theme);
+    localStorage.setItem('alpine-theme', this.theme);
+    this.scheduleUpdate?.();
+  }
+
+  toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+    this.scheduleUpdate?.();
+  }
+
   async submitWaitlist() {
     const e = this.email.trim();
     if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
@@ -76,46 +178,126 @@ component LandingPage {
 
   render() {
     return (
-      <div style="min-height: 100vh; background: #fff; overflow-x: hidden;">
+      <div style="min-height: 100vh; background: var(--brand-bg-page); color: var(--brand-text-body); overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease;">
 
         {/* ── NAV ── */}
-        <nav style="position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid #f0f0f0;">
+        <nav style="position: sticky; top: 0; z-index: 100; background: var(--brand-bg-surface); opacity: 0.96; backdrop-filter: blur(12px); border-bottom: 1px solid var(--brand-border); transition: background-color 0.3s ease;">
           <div style="max-width: 1160px; margin: 0 auto; padding: 0 32px; height: 68px; display: flex; align-items: center; justify-content: space-between;">
 
             {/* Logo */}
             <a href="/" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
-              <div style="width: 28px; height: 28px; background: #0a0a0a; border-radius: 7px; display: flex; align-items: center; justify-content: center;">
+              <div style="width: 28px; height: 28px; background: var(--brand-navy); border-radius: 7px; display: flex; align-items: center; justify-content: center;">
                 <span style="color: #fff; font-size: 13px; font-weight: 800; letter-spacing: -0.5px;">A</span>
               </div>
-              <span style="font-size: 16px; font-weight: 700; color: #0a0a0a; letter-spacing: -0.3px;">Alpine</span>
+              <span style="font-size: 16px; font-weight: 700; color: var(--brand-navy); letter-spacing: -0.3px;">Alpine</span>
             </a>
 
-            {/* Center links */}
-            <div style="display: flex; align-items: center; gap: 36px;">
+            {/* Center links (Desktop-only) */}
+            <div class="desktop-only" style="align-items: center; gap: 36px;">
               {[['Features', '#features', 'features'], ['Pricing', '#pricing', 'pricing'], ['Integrations', '#integrations', 'integrations'], ['About', '#about', 'about']].map(([label, href, id]: [string, string, string]) => (
                 <a key={label} href={href}
-                  style={`font-size: 14px; font-weight: ${this.activeSection === id ? '700' : '500'}; color: ${this.activeSection === id ? '#0a0a0a' : '#4b5563'}; text-decoration: none; transition: color 0.15s; padding-bottom: 2px; border-bottom: ${this.activeSection === id ? '2px solid #16a34a' : '2px solid transparent'};`}
-                  onmouseover={(e: any) => { e.currentTarget.style.color = '#0a0a0a'; }}
-                  onmouseout={(e: any) => { e.currentTarget.style.color = this.activeSection === id ? '#0a0a0a' : '#4b5563'; }}
+                  style={`font-size: 14px; font-weight: ${this.activeSection === id ? '700' : '500'}; color: ${this.activeSection === id ? 'var(--brand-text-primary)' : 'var(--brand-text-muted)'}; text-decoration: none; transition: color 0.15s; padding-bottom: 2px; border-bottom: ${this.activeSection === id ? '2px solid var(--brand-green)' : '2px solid transparent'};`}
+                  onmouseover={(e: any) => { e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
+                  onmouseout={(e: any) => { e.currentTarget.style.color = this.activeSection === id ? 'var(--brand-text-primary)' : 'var(--brand-text-muted)'; }}
                 >{label}</a>
               ))}
             </div>
 
             {/* Right actions */}
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <a href="#" style="font-size: 14px; font-weight: 500; color: #4b5563; text-decoration: none; padding: 8px 16px; border-radius: 999px; transition: background 0.15s;"
-                onmouseover={(e: any) => { e.currentTarget.style.background = '#f5f5f5'; }}
-                onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; }}
-              >Log in</a>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              {/* Theme Toggle (Always visible) */}
               <button
-                onclick={() => this.openWaitlist()}
-                style="font-size: 14px; font-weight: 600; color: #fff; background: #0a0a0a; border: none; padding: 9px 20px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;"
-                onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
-                onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
-              >Join Waitlist</button>
+                onclick={() => this.toggleTheme()}
+                style="width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--brand-border); background: transparent; color: var(--brand-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;"
+                onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
+                onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--brand-text-muted)'; }}
+                aria-label="Toggle theme"
+              >
+                {this.theme === 'dark' ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  </svg>
+                )}
+              </button>
+
+              <div class="desktop-only" style="align-items: center; gap: 12px; margin-left: 4px;">
+                <a href="#" style="font-size: 14px; font-weight: 500; color: var(--brand-text-muted); text-decoration: none; padding: 8px 16px; border-radius: 999px; transition: background 0.15s;"
+                  onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
+                  onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; }}
+                >Log in</a>
+                <button
+                  onclick={() => this.openWaitlist()}
+                  style={`font-size: 14px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); border: none; padding: 9px 20px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;`}
+                  onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
+                  onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
+                >Join Waitlist</button>
+              </div>
+
+              {/* Hamburger Toggle (Mobile-only) */}
+              <button
+                class="mobile-only"
+                onclick={() => this.toggleMobileMenu()}
+                style="width: 36px; height: 36px; border-radius: 8px; border: none; background: transparent; color: var(--brand-text-primary); cursor: pointer; align-items: center; justify-content: center; transition: background 0.2s;"
+                onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
+                onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+              </button>
             </div>
           </div>
         </nav>
+
+        {/* ── MOBILE MENU DRAWER ── */}
+        {this.mobileMenuOpen ? (
+          <div style="position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; background: var(--brand-bg-page);">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 68px; border-bottom: 1px solid var(--brand-border);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 28px; height: 28px; background: var(--brand-bg-inverse); border-radius: 7px; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: var(--brand-text-inverse); font-size: 13px; font-weight: 800;">A</span>
+                </div>
+                <span style="font-size: 16px; font-weight: 700; color: var(--brand-text-primary);">Alpine</span>
+              </div>
+              <button
+                onclick={() => this.toggleMobileMenu()}
+                style="width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--brand-border); background: transparent; color: var(--brand-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center;"
+              >✕</button>
+            </div>
+            <div style="flex: 1; padding: 40px 32px; display: flex; flex-direction: column; gap: 24px;">
+              {[
+                { label: 'Features', href: '#features', icon: '⊡' },
+                { label: 'Pricing', href: '#pricing', icon: '⊡' },
+                { label: 'Integrations', href: '#integrations', icon: '⊡' },
+                { label: 'About', href: '#about', icon: '⊡' },
+              ].map((link: any) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onclick={() => this.toggleMobileMenu()}
+                  style="font-size: 20px; font-weight: 600; color: var(--brand-text-primary); text-decoration: none; display: flex; align-items: center; gap: 16px;"
+                >
+                  <span style="color: var(--brand-green); font-size: 16px;">{link.icon}</span>
+                  {link.label}
+                </a>
+              ))}
+              <div style="margin-top: auto; padding-top: 32px; border-top: 1px solid var(--brand-border); display: flex; flex-direction: column; gap: 12px;">
+                <button
+                  onclick={() => { this.toggleMobileMenu(); this.openWaitlist(); }}
+                  style="width: 100%; padding: 16px; border-radius: 12px; background: var(--brand-bg-inverse); color: var(--brand-text-inverse); border: none; font-size: 16px; font-weight: 700; cursor: pointer;"
+                >Get early access</button>
+                <button
+                  onclick={() => this.toggleMobileMenu()}
+                  style="width: 100%; padding: 16px; border-radius: 12px; background: var(--brand-bg-subtle); color: var(--brand-text-primary); border: 1px solid var(--brand-border); font-size: 16px; font-weight: 600; cursor: pointer;"
+                >Log in</button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         {/* ── HERO ── */}
         <section style="padding: 88px 32px 0; text-align: center; max-width: 1160px; margin: 0 auto;">
@@ -127,28 +309,28 @@ component LandingPage {
           </div>
 
           {/* Headline */}
-          <h1 style="font-size: clamp(40px, 6vw, 64px); font-weight: 800; color: #0a0a0a; line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 24px; max-width: 760px; margin-left: auto; margin-right: auto;">
+          <h1 style="font-size: clamp(40px, 6vw, 64px); font-weight: 800; color: var(--brand-navy); line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 24px; max-width: 760px; margin-left: auto; margin-right: auto;">
             The operating system<br />
-            for <span style="color: #16a34a;">modern retail</span>
+            for <span style="color: var(--brand-green);">modern retail</span>
           </h1>
 
           {/* Subheadline */}
-          <p style="font-size: 18px; font-weight: 400; color: #6b7280; line-height: 1.65; max-width: 520px; margin: 0 auto 40px; letter-spacing: -0.01em;">
+          <p style="font-size: 18px; font-weight: 400; color: var(--brand-text-muted); line-height: 1.65; max-width: 520px; margin: 0 auto 40px; letter-spacing: -0.01em;">
             Alpine unifies point of sale, inventory, and team management — one platform built for businesses that move fast.
           </p>
 
           {/* CTAs */}
-          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 80px;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 64px; flex-wrap: wrap;">
             <button
               onclick={() => this.openWaitlist()}
-              style="font-size: 15px; font-weight: 600; color: #fff; background: #0a0a0a; border: none; padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;"
+              style="font-size: 15px; font-weight: 600; color: #fff; background: var(--brand-navy); border: none; padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;"
               onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
               onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
             >Get early access</button>
             <button
-              style="font-size: 15px; font-weight: 500; color: #374151; background: #f5f5f5; border: 1px solid #e5e7eb; padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: background 0.15s;"
-              onmouseover={(e: any) => { e.currentTarget.style.background = '#eeeeee'; }}
-              onmouseout={(e: any) => { e.currentTarget.style.background = '#f5f5f5'; }}
+              style="font-size: 15px; font-weight: 500; color: var(--brand-text-body); background: var(--brand-bg-subtle); border: 1px solid var(--brand-border); padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: background 0.15s;"
+              onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--color-snow-200)'; }}
+              onmouseout={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
             >See how it works →</button>
           </div>
         </section>
@@ -156,31 +338,31 @@ component LandingPage {
         {/* ── PRODUCT MOCKUP ── */}
         <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px; position: relative;">
           {/* Outer frame */}
-          <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 20px 20px 0 0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.04);">
+          <div style="background: var(--brand-bg-page); border: 1px solid var(--brand-border); border-radius: 20px 20px 0 0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.04);">
 
             {/* App chrome bar */}
-            <div style="background: #fff; border-bottom: 1px solid #f0f0f0; padding: 12px 20px; display: flex; align-items: center; gap: 8px;">
+            <div style="background: var(--brand-bg-surface); border-bottom: 1px solid var(--brand-border); padding: 12px 20px; display: flex; align-items: center; gap: 8px;">
               <div style="width: 10px; height: 10px; border-radius: 50%; background: #fee2e2; border: 1px solid #fca5a5;"></div>
               <div style="width: 10px; height: 10px; border-radius: 50%; background: #fef3c7; border: 1px solid #fcd34d;"></div>
               <div style="width: 10px; height: 10px; border-radius: 50%; background: #dcfce7; border: 1px solid #86efac;"></div>
-              <div style="flex: 1; margin: 0 16px; background: #f5f5f5; border-radius: 6px; height: 24px; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 11px; color: #9ca3af; font-family: monospace;">app.alpine.co</span>
+              <div style="flex: 1; margin: 0 16px; background: var(--brand-bg-subtle); border-radius: 6px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 11px; color: var(--brand-text-muted); font-family: monospace;">app.alpine.co</span>
               </div>
             </div>
 
             {/* App shell */}
-            <div style="display: flex; height: 520px; background: #f9fafb;">
+            <div style="display: flex; height: 520px; background: var(--brand-bg-page);">
 
               {/* Sidebar */}
-              <div style="width: 200px; flex-shrink: 0; background: #fff; border-right: 1px solid #f0f0f0; padding: 20px 12px; display: flex; flex-direction: column; gap: 4px;">
+              <div style="width: 200px; flex-shrink: 0; background: var(--mockup-sb-bg); border-right: 1px solid rgba(255,255,255,0.08); padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; transition: background 0.3s ease;">
                 {/* Logo in sidebar */}
                 <div style="display: flex; align-items: center; gap: 8px; padding: 8px; margin-bottom: 12px;">
-                  <div style="width: 24px; height: 24px; background: #0a0a0a; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                    <span style="color: #fff; font-size: 11px; font-weight: 800;">A</span>
+                  <div style="width: 24px; height: 24px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                    <span style="color: var(--mockup-sb-bg); font-size: 11px; font-weight: 800; transition: color 0.3s ease;">A</span>
                   </div>
-                  <span style="font-size: 13px; font-weight: 700; color: #0a0a0a;">Alpine</span>
+                  <span style="font-size: 13px; font-weight: 700; color: #fff;">Alpine</span>
                 </div>
-
+ 
                 {/* Nav items */}
                 {[
                   { icon: '⊞', label: 'Dashboard', active: true },
@@ -190,9 +372,9 @@ component LandingPage {
                   { icon: '◫', label: 'Reports', active: false },
                   { icon: '◈', label: 'Settings', active: false },
                 ].map((item: any) => (
-                  <div key={item.label} style={`display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; background: ${item.active ? '#f5f5f5' : 'transparent'};`}>
-                    <span style={`font-size: 14px; color: ${item.active ? '#0a0a0a' : '#9ca3af'};`}>{item.icon}</span>
-                    <span style={`font-size: 12px; font-weight: ${item.active ? '600' : '400'}; color: ${item.active ? '#0a0a0a' : '#6b7280'};`}>{item.label}</span>
+                  <div key={item.label} style={`display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; background: ${item.active ? 'var(--mockup-sb-active)' : 'transparent'};`}>
+                    <span style={`font-size: 14px; color: ${item.active ? '#fff' : 'var(--mockup-sb-text)'};`}>{item.icon}</span>
+                    <span style={`font-size: 12px; font-weight: ${item.active ? '600' : '400'}; color: ${item.active ? '#fff' : 'var(--mockup-sb-text)'};`}>{item.label}</span>
                   </div>
                 ))}
               </div>
@@ -203,12 +385,12 @@ component LandingPage {
                 {/* Top bar */}
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                   <div>
-                    <div style="font-size: 16px; font-weight: 700; color: #0a0a0a;">Dashboard</div>
-                    <div style="font-size: 11px; color: #9ca3af; margin-top: 1px;">Sunday, 12 April 2026</div>
+                    <div style="font-size: 16px; font-weight: 700; color: var(--brand-navy);">Dashboard</div>
+                    <div style="font-size: 11px; color: var(--brand-text-muted); margin-top: 1px;">Sunday, 12 April 2026</div>
                   </div>
                   <div style="display: flex; gap: 8px; align-items: center;">
-                    <div style="background: #f5f5f5; border-radius: 6px; padding: 6px 12px; font-size: 11px; color: #6b7280; cursor: pointer;">Main Outlet ▾</div>
-                    <div style="width: 30px; height: 30px; border-radius: 50%; background: #0a0a0a; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: var(--brand-bg-subtle); border-radius: 6px; padding: 6px 12px; font-size: 11px; color: var(--brand-text-body); cursor: pointer;">Main Outlet ▾</div>
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--brand-navy); display: flex; align-items: center; justify-content: center;">
                       <span style="font-size: 11px; color: #fff; font-weight: 600;">SB</span>
                     </div>
                   </div>
@@ -222,10 +404,10 @@ component LandingPage {
                     { label: 'Avg. Basket', value: 'K 154', delta: '-2.3%', up: false },
                     { label: 'Active SKUs', value: '4,291', delta: '+0.6%', up: true },
                   ].map((kpi: any) => (
-                    <div key={kpi.label} style="background: #fff; border: 1px solid #f0f0f0; border-radius: 10px; padding: 14px;">
-                      <div style="font-size: 10px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">{kpi.label}</div>
-                      <div style="font-size: 18px; font-weight: 700; color: #0a0a0a; letter-spacing: -0.03em;">{kpi.value}</div>
-                      <div style={`font-size: 10px; font-weight: 600; margin-top: 4px; color: ${kpi.up ? '#16a34a' : '#dc2626'};`}>{kpi.delta} vs last month</div>
+                    <div key={kpi.label} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 10px; padding: 14px;">
+                      <div style="font-size: 10px; font-weight: 600; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">{kpi.label}</div>
+                      <div style="font-size: 18px; font-weight: 700; color: var(--brand-text-primary); letter-spacing: -0.03em;">{kpi.value}</div>
+                      <div style={`font-size: 10px; font-weight: 600; margin-top: 4px; color: ${kpi.up ? 'var(--brand-green)' : '#dc2626'};`}>{kpi.delta} vs last month</div>
                     </div>
                   ))}
                 </div>
@@ -234,12 +416,12 @@ component LandingPage {
                 <div style="display: grid; grid-template-columns: 1fr 280px; gap: 12px; flex: 1; min-height: 0;">
 
                   {/* Chart */}
-                  <div style="background: #fff; border: 1px solid #f0f0f0; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+                  <div style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                      <span style="font-size: 12px; font-weight: 600; color: #0a0a0a;">Sales over time</span>
+                      <span style="font-size: 12px; font-weight: 600; color: var(--brand-text-primary);">Sales over time</span>
                       <div style="display: flex; gap: 6px;">
                         {['7d', '30d', '90d'].map((t: string, i: number) => (
-                          <span key={t} style={`font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; ${i === 1 ? 'background: #0a0a0a; color: #fff; font-weight: 600;' : 'color: #9ca3af;'}`}>{t}</span>
+                          <span key={t} style={`font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; ${i === 1 ? 'background: var(--brand-text-primary); color: var(--brand-bg-surface); font-weight: 600;' : 'color: var(--brand-text-muted);'}`}>{t}</span>
                         ))}
                       </div>
                     </div>
@@ -306,10 +488,16 @@ component LandingPage {
 
         {/* ── SOCIAL PROOF ── */}
         <section style="padding: 64px 32px 80px; text-align: center;">
-          <p style="font-size: 12px; font-weight: 600; color: #d1d5db; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 28px;">Trusted by operators across Southern Africa</p>
-          <div style="display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; opacity: 0.35; filter: grayscale(1);">
-            {['Freshmart', 'UrbanGrocers', 'TradeStar', 'Nakumat+', 'ShopOne'].map((name: string) => (
-              <span key={name} style="font-size: 15px; font-weight: 700; color: #374151; letter-spacing: -0.02em;">{name}</span>
+          <p style="font-size: 12px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 28px;">Trusted by operators across Southern Africa</p>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap;">
+            {[
+              { name: 'Freshmart', weight: 800 },
+              { name: 'UrbanGrocers', weight: 700 },
+              { name: 'TradeStar', weight: 600 },
+              { name: 'Nakumat+', weight: 900 },
+              { name: 'ShopOne', weight: 700 }
+            ].map((logo: any) => (
+              <span key={logo.name} style={`font-size: 16px; font-weight: ${logo.weight}; color: var(--brand-text-muted); opacity: 0.4; letter-spacing: -0.04em; filter: grayscale(1);`}>{logo.name}</span>
             ))}
           </div>
         </section>
@@ -317,12 +505,12 @@ component LandingPage {
         {/* ── FEATURES ── */}
         <section id="features" style="padding: 96px 32px; max-width: 1160px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 64px;">
-            <span style="display: inline-block; font-size: 12px; font-weight: 700; color: #16a34a; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Features</span>
-            <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: #0a0a0a; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Everything you need to run your business</h2>
-            <p style="font-size: 17px; color: #6b7280; max-width: 520px; margin: 0 auto; line-height: 1.65;">Alpine brings POS, inventory, team management, and analytics into one unified platform — no patchwork of tools required.</p>
+            <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Features</span>
+            <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: var(--brand-text-primary); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Everything you need to run your business</h2>
+            <p style="font-size: 17px; color: var(--brand-text-muted); max-width: 520px; margin: 0 auto; line-height: 1.65;">Alpine brings POS, inventory, team management, and analytics into one unified platform — no patchwork of tools required.</p>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          <div class="grid-3-to-1" style="display: grid; gap: 24px;">
             {[
               { icon: '🏪', title: 'Point of Sale', desc: 'Fast, reliable POS terminal that works offline. Built for high-volume retail environments with multi-till support.' },
               { icon: '📦', title: 'Inventory Management', desc: 'Track stock across multiple outlets in real-time. Set reorder levels, run stock counts, and import from Excel.' },
@@ -331,52 +519,52 @@ component LandingPage {
               { icon: '🔗', title: 'Integrations', desc: 'Connect to your existing tools — accounting software, payment gateways, fiscal compliance systems and more.' },
               { icon: '🏢', title: 'Multi-Outlet', desc: 'One account, multiple locations. Switch between outlets, consolidate reports, and manage stock transfers centrally.' },
             ].map((f: any) => (
-              <div key={f.title} style="background: #fff; border: 1px solid #f0f0f0; border-radius: 16px; padding: 28px; transition: box-shadow 0.2s;"
-                onmouseover={(e: any) => { e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.07)'; }}
+              <div key={f.title} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 16px; padding: 28px; transition: box-shadow 0.2s;"
+                onmouseover={(e: any) => { e.currentTarget.style.boxShadow = 'var(--brand-shadow)'; }}
                 onmouseout={(e: any) => { e.currentTarget.style.boxShadow = 'none'; }}
               >
                 <div style="font-size: 28px; margin-bottom: 14px;">{f.icon}</div>
-                <div style="font-size: 15px; font-weight: 700; color: #0a0a0a; margin-bottom: 8px; letter-spacing: -0.01em;">{f.title}</div>
-                <div style="font-size: 13px; color: #6b7280; line-height: 1.65;">{f.desc}</div>
+                <div style="font-size: 15px; font-weight: 700; color: var(--brand-text-primary); margin-bottom: 8px; letter-spacing: -0.01em;">{f.title}</div>
+                <div style="font-size: 13px; color: var(--brand-text-muted); line-height: 1.65;">{f.desc}</div>
               </div>
             ))}
           </div>
         </section>
 
         {/* ── PRICING ── */}
-        <section id="pricing" style="padding: 96px 32px; background: #f9fafb; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;">
+        <section id="pricing" style="padding: 96px 32px; background: var(--brand-bg-subtle); border-top: 1px solid var(--brand-border); border-bottom: 1px solid var(--brand-border);">
           <div style="max-width: 1160px; margin: 0 auto;">
             <div style="text-align: center; margin-bottom: 64px;">
-              <span style="display: inline-block; font-size: 12px; font-weight: 700; color: #16a34a; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Pricing</span>
-              <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: #0a0a0a; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Simple, transparent pricing</h2>
-              <p style="font-size: 17px; color: #6b7280; max-width: 480px; margin: 0 auto; line-height: 1.65;">No surprise fees. Pay per outlet, scale as you grow.</p>
+              <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Pricing</span>
+              <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: var(--brand-text-primary); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Simple, transparent pricing</h2>
+              <p style="font-size: 17px; color: var(--brand-text-muted); max-width: 480px; margin: 0 auto; line-height: 1.65;">No surprise fees. Pay per outlet, scale as you grow.</p>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 900px; margin: 0 auto;">
+            <div class="grid-3-to-1" style="gap: 24px; max-width: 900px; margin: 0 auto;">
               {[
-                { name: 'Starter', price: 'Free', period: '', desc: 'For small shops getting started.', features: ['1 outlet', '1 POS terminal', 'Up to 5 staff', 'Basic inventory', 'Community support'], highlight: false },
-                { name: 'Growth', price: 'K 99', period: '/mo per outlet', desc: 'For growing retail businesses.', features: ['Unlimited outlets', 'Unlimited terminals', 'Unlimited staff', 'Advanced inventory', 'Priority support', 'Analytics & reports'], highlight: true },
-                { name: 'Enterprise', price: 'Custom', period: '', desc: 'For large chains and franchises.', features: ['All Growth features', 'Custom integrations', 'Dedicated account manager', 'SLA guarantee', 'On-site onboarding'], highlight: false },
+                { name: 'Starter', price: 'Free', period: '', desc: 'For small shops getting started.', features: ['1 outlet', '1 POS terminal', 'Up to 5 staff', 'Basic inventory', 'Community support'], highlight: false, isDark: this.theme === 'dark' },
+                { name: 'Growth', price: 'K 99', period: '/mo per outlet', desc: 'For growing retail businesses.', features: ['Unlimited outlets', 'Unlimited terminals', 'Unlimited staff', 'Advanced inventory', 'Priority support', 'Analytics & reports'], highlight: true, isDark: this.theme === 'dark' },
+                { name: 'Enterprise', price: 'Custom', period: '', desc: 'For large chains and franchises.', features: ['All Growth features', 'Custom integrations', 'Dedicated account manager', 'SLA guarantee', 'On-site onboarding'], highlight: false, isDark: this.theme === 'dark' },
               ].map((plan: any) => (
-                <div key={plan.name} style={`background: ${plan.highlight ? '#0a0a0a' : '#fff'}; border: 1px solid ${plan.highlight ? '#0a0a0a' : '#f0f0f0'}; border-radius: 20px; padding: 32px; position: relative;`}>
-                  {plan.highlight ? <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #16a34a; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.06em;">Most Popular</div> : null}
-                  <div style={`font-size: 13px; font-weight: 700; color: ${plan.highlight ? '#9ca3af' : '#6b7280'}; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;`}>{plan.name}</div>
-                  <div style={`font-size: 32px; font-weight: 800; color: ${plan.highlight ? '#fff' : '#0a0a0a'}; letter-spacing: -0.04em; margin-bottom: 4px;`}>{plan.price}</div>
-                  {plan.period ? <div style={`font-size: 12px; color: ${plan.highlight ? '#6b7280' : '#9ca3af'}; margin-bottom: 16px;`}>{plan.period}</div> : <div style="margin-bottom: 16px;"></div>}
-                  <div style={`font-size: 13px; color: ${plan.highlight ? '#9ca3af' : '#6b7280'}; margin-bottom: 24px; line-height: 1.5;`}>{plan.desc}</div>
+                <div key={plan.name} style={`background: ${plan.highlight ? (plan.isDark ? 'var(--brand-bg-surface)' : 'var(--brand-bg-inverse)') : 'var(--brand-bg-surface)'}; border: 2px solid ${plan.highlight && plan.isDark ? 'var(--brand-green)' : 'var(--brand-border)'}; border-radius: 20px; padding: 32px; position: relative; transition: transform 0.2s;`}>
+                  {plan.highlight ? <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--brand-green); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10;">Most Popular</div> : null}
+                  <div style={`font-size: 13px; font-weight: 700; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.6)' : 'var(--brand-text-muted)'}; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;`}>{plan.name}</div>
+                  <div style={`font-size: 32px; font-weight: 800; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'}; letter-spacing: -0.04em; margin-bottom: 4px;`}>{plan.price}</div>
+                  {plan.period ? <div style={`font-size: 12px; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.4)' : 'var(--brand-text-muted)'}; margin-bottom: 16px;`}>{plan.period}</div> : <div style="margin-bottom: 16px;"></div>}
+                  <div style={`font-size: 13px; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.5)' : 'var(--brand-text-muted)'}; margin-bottom: 24px; line-height: 1.5;`}>{plan.desc}</div>
                   <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px;">
                     {plan.features.map((feature: string) => (
                       <div key={feature} style="display: flex; align-items: center; gap: 10px;">
-                        <span style={`font-size: 12px; color: ${plan.highlight ? '#16a34a' : '#16a34a'};`}>✓</span>
-                        <span style={`font-size: 13px; color: ${plan.highlight ? '#d1d5db' : '#374151'};`}>{feature}</span>
+                        <span style="font-size: 12px; color: var(--brand-green);">✓</span>
+                        <span style={`font-size: 13px; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'};`}>{feature}</span>
                       </div>
                     ))}
                   </div>
                   <button
                     onclick={() => this.openWaitlist()}
-                    style={`width: 100%; padding: 12px; border-radius: 999px; border: ${plan.highlight ? 'none' : '1.5px solid #e5e7eb'}; font-size: 14px; font-weight: 600; cursor: pointer; background: ${plan.highlight ? '#fff' : 'transparent'}; color: ${plan.highlight ? '#0a0a0a' : '#374151'}; transition: opacity 0.15s;`}
-                    onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.8'; }}
-                    onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
+                    style={`width: 100%; padding: 12px; border-radius: 999px; border: ${plan.highlight && !plan.isDark ? 'none' : '1.5px solid var(--brand-border)'}; font-size: 14px; font-weight: 600; cursor: pointer; background: ${plan.highlight && !plan.isDark ? 'var(--brand-bg-surface)' : 'transparent'}; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-primary)' : 'var(--brand-text-body)'}; transition: all 0.15s;`}
+                    onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.8'; if(plan.highlight && plan.isDark) e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
+                    onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; if(plan.highlight && plan.isDark) e.currentTarget.style.background = 'transparent'; }}
                   >{plan.name === 'Enterprise' ? 'Contact Sales' : 'Get started'}</button>
                 </div>
               ))}
@@ -387,25 +575,25 @@ component LandingPage {
         {/* ── INTEGRATIONS ── */}
         <section id="integrations" style="padding: 96px 32px; max-width: 1160px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 64px;">
-            <span style="display: inline-block; font-size: 12px; font-weight: 700; color: #16a34a; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Integrations</span>
-            <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: #0a0a0a; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Connects to your stack</h2>
-            <p style="font-size: 17px; color: #6b7280; max-width: 520px; margin: 0 auto; line-height: 1.65;">Alpine plays well with the tools you already use — from payment gateways to accounting platforms and compliance systems.</p>
+            <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Integrations</span>
+            <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: var(--brand-text-primary); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Connects to your stack</h2>
+            <p style="font-size: 17px; color: var(--brand-text-muted); max-width: 520px; margin: 0 auto; line-height: 1.65;">Alpine plays well with the tools you already use — from payment gateways to accounting platforms and compliance systems.</p>
           </div>
-
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 48px;">
+ 
+          <div class="grid-4-to-2-to-1" style="display: grid; gap: 16px; margin-bottom: 48px;">
             {[
               { name: 'Payments', items: ['Visa/Mastercard', 'Mobile Money', 'Bank Transfer', 'Cash Drawer'] },
               { name: 'Accounting', items: ['QuickBooks', 'Sage', 'Xero', 'Wave (coming soon)'] },
               { name: 'Fiscal', items: ['ZIMRA e-Invoice', 'KRA eTIMS', 'ZRAU Fiscalisation', 'NUST Custom'] },
               { name: 'Operations', items: ['Supplier EDI', 'Excel / CSV', 'REST API', 'Webhooks'] },
             ].map((cat: any) => (
-              <div key={cat.name} style="background: #fff; border: 1px solid #f0f0f0; border-radius: 16px; padding: 24px;">
-                <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">{cat.name}</div>
+              <div key={cat.name} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 16px; padding: 24px;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">{cat.name}</div>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                   {cat.items.map((item: string) => (
                     <div key={item} style="display: flex; align-items: center; gap: 8px;">
-                      <div style="width: 6px; height: 6px; border-radius: 50%; background: #16a34a; flex-shrink: 0;"></div>
-                      <span style="font-size: 13px; color: #374151;">{item}</span>
+                      <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--brand-green); flex-shrink: 0;"></div>
+                      <span style="font-size: 13px; color: var(--brand-text-body);">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -414,18 +602,18 @@ component LandingPage {
           </div>
 
           <div style="text-align: center;">
-            <div style="display: inline-flex; align-items: center; gap: 10px; background: #f5f5f5; border: 1px solid #e8e8e8; border-radius: 999px; padding: 12px 24px;">
-              <span style="font-size: 13px; font-weight: 500; color: #374151;">Building something custom?</span>
-              <a href="#" style="font-size: 13px; font-weight: 700; color: #0a0a0a; text-decoration: none;">Explore the API →</a>
+            <div style="display: inline-flex; align-items: center; gap: 10px; background: var(--brand-bg-subtle); border: 1px solid var(--brand-border); border-radius: 999px; padding: 12px 24px;">
+              <span style="font-size: 13px; font-weight: 500; color: var(--brand-text-body);">Building something custom?</span>
+              <a href="#" style="font-size: 13px; font-weight: 700; color: var(--brand-text-primary); text-decoration: none;">Explore the API →</a>
             </div>
           </div>
         </section>
 
         {/* ── ABOUT ── */}
-        <section id="about" style="padding: 96px 32px; background: #0a0a0a;">
-          <div style="max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;">
+        <section id="about" style="padding: 96px 32px; background: var(--brand-navy-dark);">
+          <div class="grid-2-to-1" style="max-width: 1160px; margin: 0 auto; align-items: center;">
             <div>
-              <span style="display: inline-block; font-size: 12px; font-weight: 700; color: #16a34a; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;">About</span>
+              <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;">About</span>
               <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 24px;">Built for African retail, by people who understand it</h2>
               <p style="font-size: 16px; color: #9ca3af; line-height: 1.75; margin-bottom: 20px;">Alpine is built by Kibologic — a software company operating across Southern and East Africa. We've seen the gaps that generic ERP systems leave in regional markets, and we're building the platform we always wished existed.</p>
               <p style="font-size: 16px; color: #9ca3af; line-height: 1.75; margin-bottom: 36px;">We focus on reliability first. Alpine works offline, handles local fiscal requirements, and scales from a single kiosk to a national chain.</p>
@@ -463,46 +651,50 @@ component LandingPage {
         </section>
 
         {/* ── FOOTER ── */}
-        <footer style="background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.06); padding: 32px;">
+        <footer style="background: var(--brand-navy-dark); border-top: 1px solid rgba(255,255,255,0.06); padding: 32px;">
           <div style="max-width: 1160px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
             <div style="display: flex; align-items: center; gap: 8px;">
               <div style="width: 24px; height: 24px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                <span style="color: #0a0a0a; font-size: 11px; font-weight: 800;">A</span>
+                <span style="color: var(--brand-navy-dark); font-size: 11px; font-weight: 800;">A</span>
               </div>
               <span style="font-size: 14px; font-weight: 700; color: #fff;">Alpine</span>
-              <span style="font-size: 12px; color: #4b5563; margin-left: 8px;">by Kibologic</span>
+              <span style="font-size: 12px; color: #9ca3af; margin-left: 8px;">by Kibologic</span>
             </div>
-            <div style="font-size: 12px; color: #4b5563;">© 2026 Kibologic. All rights reserved.</div>
+            <div style="font-size: 12px; color: #6b7280;">© 2026 Kibologic. All rights reserved.</div>
           </div>
         </footer>
 
         {/* ── WAITLIST MODAL ── */}
         {this.showWaitlist ? (
           <div
-            style="position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px;"
+            style="position: fixed; inset: 0; background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px;"
             onclick={(e: any) => { if (e.target === e.currentTarget) this.closeWaitlist(); }}
           >
-            <div style="background: #fff; border-radius: 20px; width: 100%; max-width: 440px; padding: 40px; box-shadow: 0 24px 48px rgba(0,0,0,0.12);">
+            <div style="background: var(--brand-bg-surface); border-radius: 20px; width: 100%; max-width: 440px; padding: 40px; box-shadow: var(--brand-shadow); border: 1px solid var(--brand-border); position: relative;">
 
               {this.submitted ? (
                 <div style="text-align: center; padding: 16px 0;">
-                  <div style="width: 52px; height: 52px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 22px;">✓</div>
-                  <h3 style="font-size: 20px; font-weight: 700; color: #0a0a0a; margin-bottom: 10px; letter-spacing: -0.02em;">You're on the list.</h3>
-                  <p style="font-size: 14px; color: #6b7280; line-height: 1.6;">We'll reach out when your spot is ready. Keep building something great.</p>
+                  <div style="width: 52px; height: 52px; background: var(--brand-bg-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 22px; color: var(--brand-green);">✓</div>
+                  <h3 style="font-size: 20px; font-weight: 700; color: var(--brand-text-primary); margin-bottom: 10px; letter-spacing: -0.02em;">You're on the list.</h3>
+                  <p style="font-size: 14px; color: var(--brand-text-muted); line-height: 1.6;">We'll reach out when your spot is ready. Keep building something great.</p>
                   <button
                     onclick={() => this.closeWaitlist()}
-                    style="margin-top: 28px; font-size: 14px; font-weight: 600; color: #fff; background: #0a0a0a; border: none; padding: 12px 28px; border-radius: 999px; cursor: pointer; width: 100%;"
+                    style="margin-top: 28px; font-size: 14px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); border: none; padding: 12px 28px; border-radius: 999px; cursor: pointer; width: 100%; transition: opacity 0.15s;"
+                    onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
+                    onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
                   >Close</button>
                 </div>
               ) : (
                 <div>
                   <button
                     onclick={() => this.closeWaitlist()}
-                    style="position: absolute; top: 20px; right: 20px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid #e5e7eb; background: transparent; color: #9ca3af; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                    style="position: absolute; top: 20px; right: 20px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--brand-border); background: transparent; color: var(--brand-text-muted); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;"
+                    onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
+                    onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--brand-text-muted)'; }}
                   >✕</button>
 
-                  <h3 style="font-size: 22px; font-weight: 800; color: #0a0a0a; margin-bottom: 8px; letter-spacing: -0.03em;">Get early access</h3>
-                  <p style="font-size: 14px; color: #6b7280; line-height: 1.55; margin-bottom: 28px;">
+                  <h3 style="font-size: 22px; font-weight: 800; color: var(--brand-text-primary); margin-bottom: 8px; letter-spacing: -0.03em;">Get early access</h3>
+                  <p style="font-size: 14px; color: var(--brand-text-muted); line-height: 1.55; margin-bottom: 28px;">
                     Alpine is in private beta. Drop your email and we'll contact you when your spot opens.
                   </p>
 
@@ -513,7 +705,9 @@ component LandingPage {
                       value={this.email}
                       oninput={(e: any) => { this.email = e.target.value; this.emailError = ''; this.scheduleUpdate?.(); }}
                       onkeydown={(e: any) => { if (e.key === 'Enter') this.submitWaitlist(); }}
-                      style={`width: 100%; padding: 13px 16px; border-radius: 10px; border: 1.5px solid ${this.emailError ? '#fca5a5' : '#e5e7eb'}; font-size: 15px; color: #0a0a0a; outline: none; transition: border-color 0.15s; font-family: inherit;`}
+                      style={`width: 100%; padding: 13px 16px; border-radius: 10px; border: 1.5px solid ${this.emailError ? '#dc2626' : 'var(--brand-border)'}; font-size: 15px; color: var(--brand-text-primary); background: var(--brand-bg-surface); outline: none; transition: border-color 0.15s; font-family: inherit;`}
+                      onfocus={(e: any) => { e.target.style.borderColor = 'var(--brand-green)'; }}
+                      onblur={(e: any) => { e.target.style.borderColor = this.emailError ? '#dc2626' : 'var(--brand-border)'; }}
                     />
                     {this.emailError ? (
                       <span style="font-size: 12px; color: #dc2626;">{this.emailError}</span>
@@ -521,11 +715,11 @@ component LandingPage {
                     <button
                       onclick={() => this.submitWaitlist()}
                       disabled={this.submitting}
-                      style={`width: 100%; padding: 13px; border-radius: 999px; border: none; font-size: 15px; font-weight: 600; color: #fff; background: #0a0a0a; cursor: ${this.submitting ? 'not-allowed' : 'pointer'}; opacity: ${this.submitting ? '0.6' : '1'}; transition: opacity 0.15s; font-family: inherit;`}
+                      style={`width: 100%; padding: 13px; border-radius: 999px; border: none; font-size: 15px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); cursor: ${this.submitting ? 'not-allowed' : 'pointer'}; opacity: ${this.submitting ? '0.6' : '1'}; transition: opacity 0.15s; font-family: inherit;`}
                     >{this.submitting ? 'Joining…' : 'Join the Waitlist'}</button>
                   </div>
 
-                  <p style="text-align: center; font-size: 12px; color: #d1d5db; margin-top: 16px;">No spam, ever. Unsubscribe anytime.</p>
+                  <p style="text-align: center; font-size: 12px; color: var(--brand-text-muted); margin-top: 16px; opacity: 0.8;">No spam, ever. Unsubscribe anytime.</p>
                 </div>
               )}
             </div>
