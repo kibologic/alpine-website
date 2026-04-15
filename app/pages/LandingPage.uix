@@ -540,11 +540,26 @@ component LandingPage {
               <p style="font-size: 17px; color: var(--brand-text-muted); max-width: 480px; margin: 0 auto; line-height: 1.65;">No surprise fees. Pay per outlet, scale as you grow.</p>
             </div>
 
-            <div class="grid-3-to-1" style="gap: 24px; max-width: 900px; margin: 0 auto;">
+            <div class="grid-3-to-1" style="gap: 24px; max-width: 900px; margin: 0 auto 24px;">
               {[
-                { name: 'Starter', price: 'Free', period: '', desc: 'For small shops getting started.', features: ['1 outlet', '1 POS terminal', 'Up to 5 staff', 'Basic inventory', 'Community support'], highlight: false, isDark: this.theme === 'dark' },
-                { name: 'Growth', price: 'K 99', period: '/mo per outlet', desc: 'For growing retail businesses.', features: ['Unlimited outlets', 'Unlimited terminals', 'Unlimited staff', 'Advanced inventory', 'Priority support', 'Analytics & reports'], highlight: true, isDark: this.theme === 'dark' },
-                { name: 'Enterprise', price: 'Custom', period: '', desc: 'For large chains and franchises.', features: ['All Growth features', 'Custom integrations', 'Dedicated account manager', 'SLA guarantee', 'On-site onboarding'], highlight: false, isDark: this.theme === 'dark' },
+                { 
+                  name: 'Free', price: 'Free', period: '', 
+                  desc: 'For small shops and solo operators testing the waters.', 
+                  features: ['3 Users', '300 Inventory Units', '1 POS Register', '100 Customers', '1 Outlet Location', '1 Device Binding'], 
+                  highlight: false, isDark: this.theme === 'dark' 
+                },
+                { 
+                  name: 'Plus', price: 'K 25,000', period: '/mo', 
+                  desc: 'For growing retail businesses operating at scale.', 
+                  features: ['15 Users', '3,000 Inventory Units', '5 POS Registers', '5,000 Customers', '3 Outlet Locations', '5 Device Bindings', 'Priority support', 'Basic Analytics'], 
+                  highlight: true, isDark: this.theme === 'dark' 
+                },
+                { 
+                  name: 'Premium', price: 'K 45,000', period: '/mo', 
+                  desc: 'For high-volume operations scaling across regions.', 
+                  features: ['50 Users', '20,000 Inventory Units', '10 POS (+ add-ons)', '50,000 Customers', '15 Outlet Locations', '15 Device Bindings', 'Audit Logs', 'API Rate Limits'], 
+                  highlight: false, isDark: this.theme === 'dark' 
+                },
               ].map((plan: any) => (
                 <div key={plan.name} style={`background: ${plan.highlight ? (plan.isDark ? 'var(--brand-bg-surface)' : 'var(--brand-bg-inverse)') : 'var(--brand-bg-surface)'}; border: 2px solid ${plan.highlight && plan.isDark ? 'var(--brand-green)' : 'var(--brand-border)'}; border-radius: 20px; padding: 32px; position: relative; transition: transform 0.2s;`}>
                   {plan.highlight ? <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--brand-green); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10;">Most Popular</div> : null}
@@ -565,10 +580,25 @@ component LandingPage {
                     style={`width: 100%; padding: 12px; border-radius: 999px; border: ${plan.highlight && !plan.isDark ? 'none' : '1.5px solid var(--brand-border)'}; font-size: 14px; font-weight: 600; cursor: pointer; background: ${plan.highlight && !plan.isDark ? 'var(--brand-bg-surface)' : 'transparent'}; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-primary)' : 'var(--brand-text-body)'}; transition: all 0.15s;`}
                     onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.8'; if(plan.highlight && plan.isDark) e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
                     onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; if(plan.highlight && plan.isDark) e.currentTarget.style.background = 'transparent'; }}
-                  >{plan.name === 'Enterprise' ? 'Contact Sales' : 'Get started'}</button>
+                  >Get started</button>
                 </div>
               ))}
             </div>
+
+            {/* Custom stretched short card for ENTERPRISE */}
+            <div style={`max-width: 900px; margin: 0 auto; background: var(--brand-bg-surface); border: 2px solid var(--brand-border); border-radius: 20px; padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; gap: 32px;`}>
+              <div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">Enterprise</div>
+                <div style="font-size: 14px; color: var(--brand-text-body); max-width: 500px; line-height: 1.5;">Remove all limits. Dedicated infrastructure, custom volume pricing, SLA guarantees, and 24/7 VIP support for massive deployments.</div>
+              </div>
+              <button
+                onclick={() => this.openWaitlist()}
+                style={`white-space: nowrap; padding: 12px 32px; border-radius: 999px; border: 1.5px solid var(--brand-border); background: transparent; color: var(--brand-text-primary); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;`}
+                onmouseover={(e: any) => e.currentTarget.style.background = 'var(--brand-bg-subtle)'}
+                onmouseout={(e: any) => e.currentTarget.style.background = 'transparent'}
+              >Contact Sales</button>
+            </div>
+
           </div>
         </section>
 
