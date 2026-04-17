@@ -118,6 +118,10 @@ component LandingPage {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             this.activeSection = entry.target.id;
+            const path = `/${entry.target.id}`;
+            if (window.location.pathname !== path) {
+              history.replaceState(null, '', path);
+            }
             this.scheduleUpdate?.();
           }
         });
@@ -194,7 +198,7 @@ component LandingPage {
 
             {/* Center links (Desktop-only) */}
             <div class="desktop-only" style="align-items: center; gap: 36px;">
-              {[['Features', '#features', 'features'], ['Pricing', '#pricing', 'pricing'], ['Integrations', '#integrations', 'integrations'], ['About', '#about', 'about']].map(([label, href, id]: [string, string, string]) => (
+              {[['Features', '/features', 'features'], ['Pricing', '/pricing', 'pricing'], ['Integrations', '/integrations', 'integrations'], ['About', '/about', 'about']].map(([label, href, id]: [string, string, string]) => (
                 <a key={label} href={href}
                   style={`font-size: 14px; font-weight: ${this.activeSection === id ? '700' : '500'}; color: ${this.activeSection === id ? 'var(--brand-text-primary)' : 'var(--brand-text-muted)'}; text-decoration: none; transition: color 0.15s; padding-bottom: 2px; border-bottom: ${this.activeSection === id ? '2px solid var(--brand-green)' : '2px solid transparent'};`}
                   onmouseover={(e: any) => { e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
@@ -270,10 +274,10 @@ component LandingPage {
             </div>
             <div style="flex: 1; padding: 40px 32px; display: flex; flex-direction: column; gap: 24px;">
               {[
-                { label: 'Features', href: '#features', icon: '⊡' },
-                { label: 'Pricing', href: '#pricing', icon: '⊡' },
-                { label: 'Integrations', href: '#integrations', icon: '⊡' },
-                { label: 'About', href: '#about', icon: '⊡' },
+                { label: 'Features', href: '/features', icon: '⊡' },
+                { label: 'Pricing', href: '/pricing', icon: '⊡' },
+                { label: 'Integrations', href: '/integrations', icon: '⊡' },
+                { label: 'About', href: '/about', icon: '⊡' },
               ].map((link: any) => (
                 <a
                   key={link.label}

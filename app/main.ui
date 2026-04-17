@@ -1,4 +1,41 @@
-import { mount } from '@kibologic/core';
+import { mount, Signal } from '@kibologic/core';
 import { LandingPage } from './pages/LandingPage.uix';
+
+const route$ = new Signal(window.location.pathname);
+
+const handleScroll = (path: string) => {
+  if (path === '/' || path === '') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  const id = path.startsWith('/') ? path.substring(1) : path;
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+window.addEventListener('popstate', () => {
+  const path = window.location.pathname;
+  route$.value = path;
+  handleScroll(path);
+});
+
+// Global internal link interceptor
+document.addEventListener('click', (e: any) => {
+  const link = e.target.closest('a');
+  if (link && link.href && link.href.startsWith(window.location.origin) && !link.target && !e.metaKey && !e.ctrlKey) {
+    const path = link.getAttribute('href');
+    if (path && path.startsWith('/') && !path.includes('#')) {
+      e.preventDefault();
+      history.pushState(null, '', path);
+      route$.value = path;
+      handleScroll(path);
+    }
+  }
+});
+
+// Initial scroll handling
+setTimeout(() => handleScroll(window.location.pathname), 100);
 
 mount(LandingPage, document.getElementById('app'));
