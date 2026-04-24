@@ -68,5 +68,5 @@ After a feature is merged:
 
 **Task:** Revamp site styling + replace generic/marketing copy with accurate developer-first Alpine ERP content.  
 **Branch:** `feature/alpine-website-revamp`  
-**Status:** In progress.
-
+**PR:** #1  
+**Status:** Completed (merged into `development`, branch deleted).
