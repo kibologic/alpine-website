@@ -38,4 +38,4 @@ document.addEventListener('click', (e: any) => {
 // Initial scroll handling
 setTimeout(() => handleScroll(window.location.pathname), 100);
 
-mount(LandingPage, document.getElementById('app'));
+mount(LandingPage, document.getElementById('app'), { route$ });

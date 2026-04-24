@@ -1,778 +1,210 @@
 import { SwissComponent } from '@kibologic/core';
 
 component LandingPage {
-  props = {};
+  props = {
+    route$: any,
+  };
 
-  state { let showWaitlist: boolean = false; }
-  state { let email: string = ''; }
-  state { let submitted: boolean = false; }
-  state { let submitting: boolean = false; }
-  state { let emailError: string = ''; }
-  state { let mobileMenuOpen: boolean = false; }
-  state { let activeSection: string = ''; }
-  state { let theme: 'light' | 'dark' = 'light'; }
+  state { let active: string = ''; }
   state { let _observer: any = null; }
 
   mounted() {
-    // Determine initial theme
-    const savedTheme = localStorage.getItem('alpine-theme') as 'light' | 'dark' | null;
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    this.theme = savedTheme || systemTheme;
-    document.documentElement.setAttribute('data-theme', this.theme);
-
-    // Inject brand tokens and smooth scroll
-    if (!document.getElementById('alp-brand-styles')) {
-      const s = document.createElement('style');
-      s.id = 'alp-brand-styles';
-      s.textContent = `
-        html { scroll-behavior: smooth; transition: background-color 0.3s ease; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        .desktop-only { display: flex; }
-        .mobile-only { display: none; }
-        @media (max-width: 860px) {
-          .desktop-only { display: none !important; }
-          .mobile-only { display: flex !important; }
-        }
-
-        .grid-3-to-1 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-        .grid-2-to-1 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 80px; }
-        .grid-4-to-2-to-1 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-        @media (max-width: 1024px) {
-          .grid-4-to-2-to-1 { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 860px) {
-          .grid-3-to-1, .grid-2-to-1, .grid-4-to-2-to-1 { grid-template-columns: 1fr; }
-          .grid-2-to-1 { gap: 48px; }
-        }
-
-        :root {
-          /* Official Alpine ERP Scale */
-          --color-snow-50:  #FAFCFF;
-          --color-snow-100: #F4F7FB;
-          --color-snow-200: #E8EFF7;
-          --color-snow-300: #D6E2EF;
-          --color-snow-400: #B8CEDE;
-          
-          --color-slate-500: #7A8499;
-          --color-slate-700: #3D4559;
-          --color-slate-900: #1A2035;
-          
-          --color-alpine-400: #4A9E58;
-          --color-alpine-500: #2D7A3A;
-          --color-alpine-600: #1D5C28;
-
-          --brand-green: var(--color-alpine-500);
-          --brand-green-light: var(--color-alpine-400);
-        }
-
-        /* LIGHT THEME */
-        [data-theme="light"], :root:not([data-theme="dark"]) {
-          --brand-navy: var(--color-slate-900);
-          --brand-navy-dark: #080a11;
-          --brand-border: var(--color-snow-300);
-          --brand-bg-page: var(--color-snow-50);
-          --brand-bg-subtle: var(--color-snow-100);
-          --brand-bg-surface: #ffffff;
-          --brand-bg-inverse: var(--color-slate-900);
-          --brand-text-primary: var(--color-slate-900);
-          --brand-text-body: var(--color-slate-700);
-          --brand-text-muted: var(--color-slate-500);
-          --brand-text-inverse: #ffffff;
-          --brand-shadow: 0 4px 24px rgba(0,0,0,0.06);
-
-          /* Mockup Tokens */
-          --mockup-sb-bg: var(--color-slate-900);
-          --mockup-sb-text: rgba(255,255,255,0.6);
-          --mockup-sb-active: rgba(255,255,255,0.1);
-        }
-
-        /* DARK THEME */
-        [data-theme="dark"] {
-          --brand-navy: #ffffff;
-          --brand-navy-dark: #05070a;
-          --brand-border: rgba(255,255,255,0.1);
-          --brand-bg-page: #0a0a0a;
-          --brand-bg-subtle: #111111;
-          --brand-bg-surface: #161616;
-          --brand-bg-inverse: #ffffff;
-          --brand-text-primary: #f8f9fa;
-          --brand-text-body: #d1d5db;
-          --brand-text-muted: #9ca3af;
-          --brand-text-inverse: #0a0a0a;
-          --brand-shadow: 0 4px 24px rgba(0,0,0,0.4);
-
-          /* Mockup Tokens */
-          --mockup-sb-bg: #05070a;
-          --mockup-sb-text: rgba(255,255,255,0.4);
-          --mockup-sb-active: rgba(255,255,255,0.06);
-        }
-      `;
-      document.head.appendChild(s);
-    }
-
-    // Scroll-spy via IntersectionObserver
-    const sections = ['features', 'pricing', 'integrations', 'about'];
+    const sections = ['overview', 'architecture', 'local-dev', 'services', 'releases'];
     this._observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            this.activeSection = entry.target.id;
-            const path = `/${entry.target.id}`;
-            if (window.location.pathname !== path) {
-              history.replaceState(null, '', path);
-            }
-            this.scheduleUpdate?.();
-          }
-        });
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          this.active = e.target.id;
+          if (window.location.pathname !== `/${this.active}`) history.replaceState(null, '', `/${this.active}`);
+          this.scheduleUpdate?.();
+          break;
+        }
       },
-      { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
+      { rootMargin: '-25% 0px -70% 0px', threshold: 0 }
     );
-    sections.forEach((id) => {
+
+    for (const id of sections) {
       const el = document.getElementById(id);
       if (el) this._observer.observe(el);
-    });
+    }
   }
 
   unmounted() {
     this._observer?.disconnect();
   }
 
-  openWaitlist() {
-    this.showWaitlist = true;
-    this.submitted = false;
-    this.email = '';
-    this.emailError = '';
-    this.scheduleUpdate?.();
+  nav() {
+    const links = [
+      { id: 'overview', label: 'Overview', key: '01' },
+      { id: 'architecture', label: 'Architecture', key: '02' },
+      { id: 'local-dev', label: 'Local Dev', key: '03' },
+      { id: 'services', label: 'Services', key: '04' },
+      { id: 'releases', label: 'Releases', key: '05' },
+    ];
+
+    return (
+      <nav class="alp-nav">
+        <div class="alp-nav__hd">
+          <div class="alp-nav__title">Docs</div>
+          <div class="alp-nav__subtitle">Alpine ERP developer portal</div>
+        </div>
+        <div class="alp-nav__list">
+          {links.map((l: any) => (
+            <a class="alp-nav__a" href={`/${l.id}`} data-active={this.active === l.id ? 'true' : 'false'}>
+              <span class="alp-nav__k">{l.key}</span>
+              <span>{l.label}</span>
+            </a>
+          ))}
+        </div>
+      </nav>
+    );
   }
 
-  closeWaitlist() {
-    this.showWaitlist = false;
-    this.scheduleUpdate?.();
-  }
-
-  toggleTheme() {
-    this.theme = this.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', this.theme);
-    localStorage.setItem('alpine-theme', this.theme);
-    this.scheduleUpdate?.();
-  }
-
-  toggleMobileMenu() {
-    this.mobileMenuOpen = !this.mobileMenuOpen;
-    this.scheduleUpdate?.();
-  }
-
-  async submitWaitlist() {
-    const e = this.email.trim();
-    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
-      this.emailError = 'Please enter a valid email address.';
-      this.scheduleUpdate?.();
-      return;
-    }
-    this.emailError = '';
-    this.submitting = true;
-    this.scheduleUpdate?.();
-    // Simulate submit — wire to actual API later
-    await new Promise(r => setTimeout(r, 900));
-    this.submitting = false;
-    this.submitted = true;
-    this.scheduleUpdate?.();
+  codeBlock(lines: string[]) {
+    return (
+      <div class="alp-code">
+        <pre>{lines.join('\n')}</pre>
+      </div>
+    );
   }
 
   render() {
     return (
-      <div style="min-height: 100vh; background: var(--brand-bg-page); color: var(--brand-text-body); overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease;">
-
-        {/* ── NAV ── */}
-        <nav style="position: sticky; top: 0; z-index: 100; background: var(--brand-bg-surface); opacity: 0.96; backdrop-filter: blur(12px); border-bottom: 1px solid var(--brand-border); transition: background-color 0.3s ease;">
-          <div style="max-width: 1160px; margin: 0 auto; padding: 0 32px; height: 68px; display: flex; align-items: center; justify-content: space-between;">
-
-            {/* Logo */}
-            <a href="/" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
-              <div style="width: 28px; height: 28px; background: var(--brand-navy); border-radius: 7px; display: flex; align-items: center; justify-content: center;">
-                <span style="color: #fff; font-size: 13px; font-weight: 800; letter-spacing: -0.5px;">A</span>
-              </div>
-              <span style="font-size: 16px; font-weight: 700; color: var(--brand-navy); letter-spacing: -0.3px;">Alpine</span>
-            </a>
-
-            {/* Center links (Desktop-only) */}
-            <div class="desktop-only" style="align-items: center; gap: 36px;">
-              {[['Features', '/features', 'features'], ['Pricing', '/pricing', 'pricing'], ['Integrations', '/integrations', 'integrations'], ['About', '/about', 'about']].map(([label, href, id]: [string, string, string]) => (
-                <a key={label} href={href}
-                  style={`font-size: 14px; font-weight: ${this.activeSection === id ? '700' : '500'}; color: ${this.activeSection === id ? 'var(--brand-text-primary)' : 'var(--brand-text-muted)'}; text-decoration: none; transition: color 0.15s; padding-bottom: 2px; border-bottom: ${this.activeSection === id ? '2px solid var(--brand-green)' : '2px solid transparent'};`}
-                  onmouseover={(e: any) => { e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
-                  onmouseout={(e: any) => { e.currentTarget.style.color = this.activeSection === id ? 'var(--brand-text-primary)' : 'var(--brand-text-muted)'; }}
-                >{label}</a>
-              ))}
+      <div>
+        <header class="alp-topbar">
+          <div class="alp-topbar__inner">
+            <div class="alp-brand">
+              <div class="alp-mark" aria-hidden="true"></div>
+              <div>Alpine ERP</div>
+              <span class="alp-pill">developer portal</span>
             </div>
 
-            {/* Right actions */}
-            <div style="display: flex; align-items: center; gap: 8px;">
-              {/* Theme Toggle (Always visible) */}
-              <button
-                onclick={() => this.toggleTheme()}
-                style="width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--brand-border); background: transparent; color: var(--brand-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;"
-                onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
-                onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--brand-text-muted)'; }}
-                aria-label="Toggle theme"
-              >
-                {this.theme === 'dark' ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                  </svg>
-                )}
-              </button>
-
-              <div class="desktop-only" style="align-items: center; gap: 12px; margin-left: 4px;">
-                <a href="#" style="font-size: 14px; font-weight: 500; color: var(--brand-text-muted); text-decoration: none; padding: 8px 16px; border-radius: 999px; transition: background 0.15s;"
-                  onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
-                  onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; }}
-                >Log in</a>
-                <button
-                  onclick={() => this.openWaitlist()}
-                  style={`font-size: 14px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); border: none; padding: 9px 20px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;`}
-                  onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
-                  onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
-                >Join Waitlist</button>
-              </div>
-
-              {/* Hamburger Toggle (Mobile-only) */}
-              <button
-                class="mobile-only"
-                onclick={() => this.toggleMobileMenu()}
-                style="width: 36px; height: 36px; border-radius: 8px; border: none; background: transparent; color: var(--brand-text-primary); cursor: pointer; align-items: center; justify-content: center; transition: background 0.2s;"
-                onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
-                onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
-                </svg>
-              </button>
+            <div class="alp-actions">
+              <a class="alp-btn" href="/local-dev">Quickstart</a>
+              <a class="alp-btn alp-btn--primary" href="https://github.com/kibologic/alpine-erp-core" target="_blank" rel="noreferrer">alpine-erp-core</a>
             </div>
           </div>
-        </nav>
+        </header>
 
-        {/* ── MOBILE MENU DRAWER ── */}
-        {this.mobileMenuOpen ? (
-          <div style="position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; background: var(--brand-bg-page);">
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 68px; border-bottom: 1px solid var(--brand-border);">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 28px; height: 28px; background: var(--brand-bg-inverse); border-radius: 7px; display: flex; align-items: center; justify-content: center;">
-                  <span style="color: var(--brand-text-inverse); font-size: 13px; font-weight: 800;">A</span>
-                </div>
-                <span style="font-size: 16px; font-weight: 700; color: var(--brand-text-primary);">Alpine</span>
-              </div>
-              <button
-                onclick={() => this.toggleMobileMenu()}
-                style="width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--brand-border); background: transparent; color: var(--brand-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center;"
-              >✕</button>
-            </div>
-            <div style="flex: 1; padding: 40px 32px; display: flex; flex-direction: column; gap: 24px;">
-              {[
-                { label: 'Features', href: '/features', icon: '⊡' },
-                { label: 'Pricing', href: '/pricing', icon: '⊡' },
-                { label: 'Integrations', href: '/integrations', icon: '⊡' },
-                { label: 'About', href: '/about', icon: '⊡' },
-              ].map((link: any) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  onclick={() => this.toggleMobileMenu()}
-                  style="font-size: 20px; font-weight: 600; color: var(--brand-text-primary); text-decoration: none; display: flex; align-items: center; gap: 16px;"
-                >
-                  <span style="color: var(--brand-green); font-size: 16px;">{link.icon}</span>
-                  {link.label}
-                </a>
-              ))}
-              <div style="margin-top: auto; padding-top: 32px; border-top: 1px solid var(--brand-border); display: flex; flex-direction: column; gap: 12px;">
-                <button
-                  onclick={() => { this.toggleMobileMenu(); this.openWaitlist(); }}
-                  style="width: 100%; padding: 16px; border-radius: 12px; background: var(--brand-bg-inverse); color: var(--brand-text-inverse); border: none; font-size: 16px; font-weight: 700; cursor: pointer;"
-                >Get early access</button>
-                <button
-                  onclick={() => this.toggleMobileMenu()}
-                  style="width: 100%; padding: 16px; border-radius: 12px; background: var(--brand-bg-subtle); color: var(--brand-text-primary); border: 1px solid var(--brand-border); font-size: 16px; font-weight: 600; cursor: pointer;"
-                >Log in</button>
-              </div>
-            </div>
-          </div>
-        ) : null}
+        <div class="alp-shell">
+          {this.nav()}
 
-        {/* ── HERO ── */}
-        <section style="padding: 88px 32px 0; text-align: center; max-width: 1160px; margin: 0 auto;">
-
-          {/* Announcement badge */}
-          <div style="display: inline-flex; align-items: center; gap: 8px; background: #f5f5f5; border: 1px solid #e8e8e8; border-radius: 999px; padding: 5px 14px 5px 6px; margin-bottom: 36px;">
-            <span style="background: #0a0a0a; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase;">New</span>
-            <span style="font-size: 13px; font-weight: 500; color: #374151;">Multi-outlet inventory now available</span>
-          </div>
-
-          {/* Headline */}
-          <h1 style="font-size: clamp(40px, 6vw, 64px); font-weight: 800; color: var(--brand-navy); line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 24px; max-width: 760px; margin-left: auto; margin-right: auto;">
-            The operating system<br />
-            for <span style="color: var(--brand-green);">modern retail</span>
-          </h1>
-
-          {/* Subheadline */}
-          <p style="font-size: 18px; font-weight: 400; color: var(--brand-text-muted); line-height: 1.65; max-width: 520px; margin: 0 auto 40px; letter-spacing: -0.01em;">
-            Alpine unifies point of sale, inventory, and team management — one platform built for businesses that move fast.
-          </p>
-
-          {/* CTAs */}
-          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 64px; flex-wrap: wrap;">
-            <button
-              onclick={() => this.openWaitlist()}
-              style="font-size: 15px; font-weight: 600; color: #fff; background: var(--brand-navy); border: none; padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;"
-              onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
-              onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
-            >Get early access</button>
-            <button
-              style="font-size: 15px; font-weight: 500; color: var(--brand-text-body); background: var(--brand-bg-subtle); border: 1px solid var(--brand-border); padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: background 0.15s;"
-              onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--color-snow-200)'; }}
-              onmouseout={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
-            >See how it works →</button>
-          </div>
-        </section>
-
-        {/* ── PRODUCT MOCKUP ── */}
-        <div style="max-width: 1080px; margin: 0 auto; padding: 0 32px; position: relative;">
-          {/* Outer frame */}
-          <div style="background: var(--brand-bg-page); border: 1px solid var(--brand-border); border-radius: 20px 20px 0 0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.04);">
-
-            {/* App chrome bar */}
-            <div style="background: var(--brand-bg-surface); border-bottom: 1px solid var(--brand-border); padding: 12px 20px; display: flex; align-items: center; gap: 8px;">
-              <div style="width: 10px; height: 10px; border-radius: 50%; background: #fee2e2; border: 1px solid #fca5a5;"></div>
-              <div style="width: 10px; height: 10px; border-radius: 50%; background: #fef3c7; border: 1px solid #fcd34d;"></div>
-              <div style="width: 10px; height: 10px; border-radius: 50%; background: #dcfce7; border: 1px solid #86efac;"></div>
-              <div style="flex: 1; margin: 0 16px; background: var(--brand-bg-subtle); border-radius: 6px; height: 24px; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 11px; color: var(--brand-text-muted); font-family: monospace;">app.alpine.co</span>
-              </div>
+          <main class="alp-main">
+            <div class="alp-hero">
+              <h1 class="alp-h1">Alpine ERP: SwissJS UI, FastAPI services, Postgres ledger core.</h1>
+              <p class="alp-lede">
+                This site is for engineers working inside Kibologic. It documents how Alpine is structured, how the local workspace is wired,
+                and the conventions that keep multi-repo development predictable.
+              </p>
             </div>
 
-            {/* App shell */}
-            <div style="display: flex; height: 520px; background: var(--brand-bg-page);">
+            <div class="alp-content">
+              <section id="overview" class="alp-section">
+                <h2 class="alp-h2">Overview</h2>
+                <p class="alp-p">
+                  Alpine ERP is a multi-tenant platform built around an append-only ledger core (inventory + accounting invariants),
+                  with an event-driven workflow model and strict tenant isolation.
+                </p>
 
-              {/* Sidebar */}
-              <div style="width: 200px; flex-shrink: 0; background: var(--mockup-sb-bg); border-right: 1px solid rgba(255,255,255,0.08); padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; transition: background 0.3s ease;">
-                {/* Logo in sidebar */}
-                <div style="display: flex; align-items: center; gap: 8px; padding: 8px; margin-bottom: 12px;">
-                  <div style="width: 24px; height: 24px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                    <span style="color: var(--mockup-sb-bg); font-size: 11px; font-weight: 800; transition: color 0.3s ease;">A</span>
+                <div class="alp-grid">
+                  <div class="alp-card">
+                    <h3>Frontend</h3>
+                    <p>SwissJS (`.ui` / `.uix`) compiled and served via Swite. Shell-driven module architecture.</p>
                   </div>
-                  <span style="font-size: 13px; font-weight: 700; color: #fff;">Alpine</span>
-                </div>
- 
-                {/* Nav items */}
-                {[
-                  { icon: '⊞', label: 'Dashboard', active: true },
-                  { icon: '⊡', label: 'Point of Sale', active: false },
-                  { icon: '▦', label: 'Inventory', active: false },
-                  { icon: '◱', label: 'Customers', active: false },
-                  { icon: '◫', label: 'Reports', active: false },
-                  { icon: '◈', label: 'Settings', active: false },
-                ].map((item: any) => (
-                  <div key={item.label} style={`display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; background: ${item.active ? 'var(--mockup-sb-active)' : 'transparent'};`}>
-                    <span style={`font-size: 14px; color: ${item.active ? '#fff' : 'var(--mockup-sb-text)'};`}>{item.icon}</span>
-                    <span style={`font-size: 12px; font-weight: ${item.active ? '600' : '400'}; color: ${item.active ? '#fff' : 'var(--mockup-sb-text)'};`}>{item.label}</span>
+                  <div class="alp-card">
+                    <h3>Backend</h3>
+                    <p>FastAPI services (async-first). Version endpoint used by release enforcement.</p>
                   </div>
-                ))}
-              </div>
-
-              {/* Main content */}
-              <div style="flex: 1; overflow: hidden; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
-
-                {/* Top bar */}
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <div>
-                    <div style="font-size: 16px; font-weight: 700; color: var(--brand-navy);">Dashboard</div>
-                    <div style="font-size: 11px; color: var(--brand-text-muted); margin-top: 1px;">Sunday, 12 April 2026</div>
+                  <div class="alp-card">
+                    <h3>Database</h3>
+                    <p>PostgreSQL. Ledger tables are source of truth; derived snapshots exist only for performance.</p>
                   </div>
-                  <div style="display: flex; gap: 8px; align-items: center;">
-                    <div style="background: var(--brand-bg-subtle); border-radius: 6px; padding: 6px 12px; font-size: 11px; color: var(--brand-text-body); cursor: pointer;">Main Outlet ▾</div>
-                    <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--brand-navy); display: flex; align-items: center; justify-content: center;">
-                      <span style="font-size: 11px; color: #fff; font-weight: 600;">SB</span>
-                    </div>
+                  <div class="alp-card">
+                    <h3>Workspace</h3>
+                    <p>Ports + service wiring are allocated by `kibologic/registry/services.json` to avoid collisions.</p>
                   </div>
                 </div>
+              </section>
 
-                {/* KPI Cards */}
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
-                  {[
-                    { label: 'Revenue', value: 'K 284,310', delta: '+12.4%', up: true },
-                    { label: 'Orders', value: '1,847', delta: '+8.1%', up: true },
-                    { label: 'Avg. Basket', value: 'K 154', delta: '-2.3%', up: false },
-                    { label: 'Active SKUs', value: '4,291', delta: '+0.6%', up: true },
-                  ].map((kpi: any) => (
-                    <div key={kpi.label} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 10px; padding: 14px;">
-                      <div style="font-size: 10px; font-weight: 600; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">{kpi.label}</div>
-                      <div style="font-size: 18px; font-weight: 700; color: var(--brand-text-primary); letter-spacing: -0.03em;">{kpi.value}</div>
-                      <div style={`font-size: 10px; font-weight: 600; margin-top: 4px; color: ${kpi.up ? 'var(--brand-green)' : '#dc2626'};`}>{kpi.delta} vs last month</div>
-                    </div>
-                  ))}
-                </div>
+              <section id="architecture" class="alp-section">
+                <h2 class="alp-h2">Architecture</h2>
+                <p class="alp-p">
+                  Alpine is deliberately split into repos: the ERP core app, provider modules, UI shell, and shared packages.
+                  This keeps tool upgrades (SwissJS/Swite) upstream and prevents app repos from accumulating workarounds.
+                </p>
 
-                {/* Chart + Activity row */}
-                <div style="display: grid; grid-template-columns: 1fr 280px; gap: 12px; flex: 1; min-height: 0;">
+                {this.codeBlock([
+                  '# Workspace (high level)',
+                  'kibologic/',
+                  '  alpine-erp-core/   # main ERP app (SwissJS shell + FastAPI services)',
+                  '  alpine-erp/        # enterprise provider (manifest + enterprise service)',
+                  '  alpine-shell/      # shell host dev server',
+                  '  swiss-lib/         # SwissJS runtime + compiler',
+                  '  swite/             # Swite dev server + toolchain',
+                  '  registry/          # fixed port allocations',
+                ])}
+              </section>
 
-                  {/* Chart */}
-                  <div style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                      <span style="font-size: 12px; font-weight: 600; color: var(--brand-text-primary);">Sales over time</span>
-                      <div style="display: flex; gap: 6px;">
-                        {['7d', '30d', '90d'].map((t: string, i: number) => (
-                          <span key={t} style={`font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; ${i === 1 ? 'background: var(--brand-text-primary); color: var(--brand-bg-surface); font-weight: 600;' : 'color: var(--brand-text-muted);'}`}>{t}</span>
-                        ))}
-                      </div>
-                    </div>
+              <section id="local-dev" class="alp-section">
+                <h2 class="alp-h2">Local Dev</h2>
+                <p class="alp-p">
+                  Each repo runs as its own dev server. Ports are fixed by the registry; when a port is busy, kill the running process and restart
+                  instead of changing port numbers.
+                </p>
 
-                    {/* SVG chart */}
-                    <svg viewBox="0 0 440 120" style="width: 100%; flex: 1;" preserveAspectRatio="none">
-                      {/* Grid lines */}
-                      <line x1="0" y1="30" x2="440" y2="30" stroke="#f0f0f0" stroke-width="1"/>
-                      <line x1="0" y1="60" x2="440" y2="60" stroke="#f0f0f0" stroke-width="1"/>
-                      <line x1="0" y1="90" x2="440" y2="90" stroke="#f0f0f0" stroke-width="1"/>
+                {this.codeBlock([
+                  '# Alpine website',
+                  'pnpm install',
+                  'pnpm dev',
+                  '',
+                  '# Check allocated port (source of truth)',
+                  'cat ../registry/services.json | rg \"alpine-website\" -n',
+                ])}
 
-                      {/* Area fill */}
-                      <defs>
-                        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stop-color="#16a34a" stop-opacity="0.12"/>
-                          <stop offset="100%" stop-color="#16a34a" stop-opacity="0"/>
-                        </linearGradient>
-                      </defs>
-                      <path d="M0,95 C30,90 55,65 88,60 C121,55 155,75 190,58 C225,41 255,20 295,28 C335,36 370,50 440,35 L440,120 L0,120 Z"
-                        fill="url(#areaGrad)"/>
-                      {/* Line */}
-                      <path d="M0,95 C30,90 55,65 88,60 C121,55 155,75 190,58 C225,41 255,20 295,28 C335,36 370,50 440,35"
-                        fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      {/* Data point */}
-                      <circle cx="295" cy="28" r="3.5" fill="#16a34a"/>
-                      <circle cx="295" cy="28" r="6" fill="#16a34a" fill-opacity="0.15"/>
-                    </svg>
+                <p class="alp-p alp-muted" style="margin-top: 10px;">
+                  Tip: if you see DB auth errors with a user like <code>\"  postgres\"</code>, you likely have a malformed <code>DATABASE_URL</code>
+                  in the shell environment (whitespace/newlines). Shell variables override <code>.env</code>.
+                </p>
+              </section>
 
-                    {/* X labels */}
-                    <div style="display: flex; justify-content: space-between; padding: 0 4px;">
-                      {['Apr 1', 'Apr 5', 'Apr 8', 'Apr 11', 'Apr 14', 'Apr 17', 'Apr 20'].map((d: string) => (
-                        <span key={d} style="font-size: 9px; color: #d1d5db;">{d}</span>
-                      ))}
-                    </div>
-                  </div>
+              <section id="services" class="alp-section">
+                <h2 class="alp-h2">Services</h2>
+                <p class="alp-p">
+                  Alpine ERP core exposes a version endpoint used by release checks and debugging. When wiring multiple repos, verify each service
+                  is reachable on its allocated port.
+                </p>
 
-                  {/* Activity feed */}
-                  <div style="background: #fff; border: 1px solid #f0f0f0; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px; overflow: hidden;">
-                    <span style="font-size: 12px; font-weight: 600; color: #0a0a0a;">Recent activity</span>
-                    {[
-                      { label: 'Sale #4821', sub: 'Main Outlet · K 3,200', dot: '#16a34a', time: '2m ago' },
-                      { label: 'Stock adjusted', sub: 'Rice 50kg ×120 units', dot: '#f59e0b', time: '14m ago' },
-                      { label: 'Sale #4820', sub: 'Branch 2 · K 1,850', dot: '#16a34a', time: '21m ago' },
-                      { label: 'New customer', sub: 'Tendai Moyo registered', dot: '#6366f1', time: '1h ago' },
-                      { label: 'Session closed', sub: 'Till 3 · K 94,200 float', dot: '#9ca3af', time: '2h ago' },
-                      { label: 'Sale #4819', sub: 'Main Outlet · K 5,600', dot: '#16a34a', time: '2h ago' },
-                    ].map((item: any) => (
-                      <div key={item.label} style="display: flex; align-items: center; gap: 10px;">
-                        <div style={`width: 6px; height: 6px; border-radius: 50%; background: ${item.dot}; flex-shrink: 0;`}></div>
-                        <div style="flex: 1; min-width: 0;">
-                          <div style="font-size: 11px; font-weight: 600; color: #0a0a0a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{item.label}</div>
-                          <div style="font-size: 10px; color: #9ca3af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{item.sub}</div>
-                        </div>
-                        <span style="font-size: 9px; color: #d1d5db; flex-shrink: 0;">{item.time}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                {this.codeBlock([
+                  '# Example endpoints (alpine-erp-core backend)',
+                  'GET http://127.0.0.1:8000/health',
+                  'GET http://127.0.0.1:8000/api/v1/meta/version',
+                ])}
+              </section>
 
-              </div>
+              <section id="releases" class="alp-section">
+                <h2 class="alp-h2">Releases</h2>
+                <p class="alp-p">
+                  Promotions to <code>staging</code> and <code>main</code> are tracked releases (not “latest commit”). The release ID is defined in
+                  <code>kibologic/sws-infra/releases/&lt;release_id&gt;.json</code> and enforced between frontend and backend.
+                </p>
+
+                {this.codeBlock([
+                  '# Release enforcement (concept)',
+                  'Frontend serves:  /meta/release.js  -> window.__ALPINE_RELEASE__',
+                  'Backend exposes: /api/v1/meta/version',
+                  'Frontend refuses to boot if release_id mismatches.',
+                ])}
+              </section>
             </div>
-          </div>
+
+            <footer class="alp-foot">
+              <div>Alpine ERP developer portal</div>
+              <div style="font-family: var(--font-mono);">SwissJS + Swite</div>
+            </footer>
+          </main>
         </div>
-
-        {/* ── SOCIAL PROOF ── */}
-        <section style="padding: 64px 32px 80px; text-align: center;">
-          <p style="font-size: 12px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 28px;">Trusted by operators across Southern Africa</p>
-          <div style="display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap;">
-            {[
-              { name: 'Freshmart', weight: 800 },
-              { name: 'UrbanGrocers', weight: 700 },
-              { name: 'TradeStar', weight: 600 },
-              { name: 'Nakumat+', weight: 900 },
-              { name: 'ShopOne', weight: 700 }
-            ].map((logo: any) => (
-              <span key={logo.name} style={`font-size: 16px; font-weight: ${logo.weight}; color: var(--brand-text-muted); opacity: 0.4; letter-spacing: -0.04em; filter: grayscale(1);`}>{logo.name}</span>
-            ))}
-          </div>
-        </section>
-
-        {/* ── FEATURES ── */}
-        <section id="features" style="padding: 96px 32px; max-width: 1160px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 64px;">
-            <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Features</span>
-            <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: var(--brand-text-primary); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Everything you need to run your business</h2>
-            <p style="font-size: 17px; color: var(--brand-text-muted); max-width: 520px; margin: 0 auto; line-height: 1.65;">Alpine brings POS, inventory, team management, and analytics into one unified platform — no patchwork of tools required.</p>
-          </div>
-
-          <div class="grid-3-to-1" style="display: grid; gap: 24px;">
-            {[
-              { icon: '🏪', title: 'Point of Sale', desc: 'Fast, reliable POS terminal that works offline. Built for high-volume retail environments with multi-till support.' },
-              { icon: '📦', title: 'Inventory Management', desc: 'Track stock across multiple outlets in real-time. Set reorder levels, run stock counts, and import from Excel.' },
-              { icon: '📊', title: 'Analytics & Reports', desc: 'Live dashboards and customisable reports. Understand your sales, margins, and top performers at a glance.' },
-              { icon: '👥', title: 'Team Management', desc: 'Invite staff, assign roles, and control permissions granularly. Full audit log for every action taken.' },
-              { icon: '🔗', title: 'Integrations', desc: 'Connect to your existing tools — accounting software, payment gateways, fiscal compliance systems and more.' },
-              { icon: '🏢', title: 'Multi-Outlet', desc: 'One account, multiple locations. Switch between outlets, consolidate reports, and manage stock transfers centrally.' },
-            ].map((f: any) => (
-              <div key={f.title} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 16px; padding: 28px; transition: box-shadow 0.2s;"
-                onmouseover={(e: any) => { e.currentTarget.style.boxShadow = 'var(--brand-shadow)'; }}
-                onmouseout={(e: any) => { e.currentTarget.style.boxShadow = 'none'; }}
-              >
-                <div style="font-size: 28px; margin-bottom: 14px;">{f.icon}</div>
-                <div style="font-size: 15px; font-weight: 700; color: var(--brand-text-primary); margin-bottom: 8px; letter-spacing: -0.01em;">{f.title}</div>
-                <div style="font-size: 13px; color: var(--brand-text-muted); line-height: 1.65;">{f.desc}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ── PRICING ── */}
-        <section id="pricing" style="padding: 96px 32px; background: var(--brand-bg-subtle); border-top: 1px solid var(--brand-border); border-bottom: 1px solid var(--brand-border);">
-          <div style="max-width: 1160px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 64px;">
-              <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Pricing</span>
-              <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: var(--brand-text-primary); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Simple, transparent pricing</h2>
-              <p style="font-size: 17px; color: var(--brand-text-muted); max-width: 480px; margin: 0 auto; line-height: 1.65;">No surprise fees. Pay per outlet, scale as you grow.</p>
-            </div>
-
-            <div class="grid-3-to-1" style="gap: 24px; max-width: 900px; margin: 0 auto 24px;">
-              {[
-                { 
-                  name: 'Free', price: 'Free', period: '', 
-                  desc: 'For small shops and solo operators testing the waters.', 
-                  features: ['3 Users', '300 Inventory Units', '1 POS Register', '100 Customers', '1 Outlet Location', '1 Device Binding'], 
-                  highlight: false, isDark: this.theme === 'dark' 
-                },
-                { 
-                  name: 'Plus', price: 'K 25,000', period: '/mo', 
-                  desc: 'For growing retail businesses operating at scale.', 
-                  features: ['15 Users', '3,000 Inventory Units', '5 POS Registers', '5,000 Customers', '3 Outlet Locations', '5 Device Bindings', 'Priority support', 'Basic Analytics'], 
-                  highlight: true, isDark: this.theme === 'dark' 
-                },
-                { 
-                  name: 'Premium', price: 'K 45,000', period: '/mo', 
-                  desc: 'For high-volume operations scaling across regions.', 
-                  features: ['50 Users', '20,000 Inventory Units', '10 POS (+ add-ons)', '50,000 Customers', '15 Outlet Locations', '15 Device Bindings', 'Audit Logs', 'API Rate Limits'], 
-                  highlight: false, isDark: this.theme === 'dark' 
-                },
-              ].map((plan: any) => (
-                <div key={plan.name} style={`background: ${plan.highlight ? (plan.isDark ? 'var(--brand-bg-surface)' : 'var(--brand-bg-inverse)') : 'var(--brand-bg-surface)'}; border: 2px solid ${plan.highlight && plan.isDark ? 'var(--brand-green)' : 'var(--brand-border)'}; border-radius: 20px; padding: 32px; position: relative; transition: transform 0.2s;`}>
-                  {plan.highlight ? <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--brand-green); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10;">Most Popular</div> : null}
-                  <div style={`font-size: 13px; font-weight: 700; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.6)' : 'var(--brand-text-muted)'}; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;`}>{plan.name}</div>
-                  <div style={`font-size: 32px; font-weight: 800; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'}; letter-spacing: -0.04em; margin-bottom: 4px;`}>{plan.price}</div>
-                  {plan.period ? <div style={`font-size: 12px; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.4)' : 'var(--brand-text-muted)'}; margin-bottom: 16px;`}>{plan.period}</div> : <div style="margin-bottom: 16px;"></div>}
-                  <div style={`font-size: 13px; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.5)' : 'var(--brand-text-muted)'}; margin-bottom: 24px; line-height: 1.5;`}>{plan.desc}</div>
-                  <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px;">
-                    {plan.features.map((feature: string) => (
-                      <div key={feature} style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 12px; color: var(--brand-green);">✓</span>
-                        <span style={`font-size: 13px; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'};`}>{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    onclick={() => this.openWaitlist()}
-                    style={`width: 100%; padding: 12px; border-radius: 999px; border: ${plan.highlight && !plan.isDark ? 'none' : '1.5px solid var(--brand-border)'}; font-size: 14px; font-weight: 600; cursor: pointer; background: ${plan.highlight && !plan.isDark ? 'var(--brand-bg-surface)' : 'transparent'}; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-primary)' : 'var(--brand-text-body)'}; transition: all 0.15s;`}
-                    onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.8'; if(plan.highlight && plan.isDark) e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
-                    onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; if(plan.highlight && plan.isDark) e.currentTarget.style.background = 'transparent'; }}
-                  >Get started</button>
-                </div>
-              ))}
-            </div>
-
-            {/* Custom stretched short card for ENTERPRISE */}
-            <div style={`max-width: 900px; margin: 0 auto; background: var(--brand-bg-surface); border: 2px solid var(--brand-border); border-radius: 20px; padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; gap: 32px;`}>
-              <div>
-                <div style="font-size: 13px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">Enterprise</div>
-                <div style="font-size: 14px; color: var(--brand-text-body); max-width: 500px; line-height: 1.5;">Remove all limits. Dedicated infrastructure, custom volume pricing, SLA guarantees, and 24/7 VIP support for massive deployments.</div>
-              </div>
-              <button
-                onclick={() => this.openWaitlist()}
-                style={`white-space: nowrap; padding: 12px 32px; border-radius: 999px; border: 1.5px solid var(--brand-border); background: transparent; color: var(--brand-text-primary); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;`}
-                onmouseover={(e: any) => e.currentTarget.style.background = 'var(--brand-bg-subtle)'}
-                onmouseout={(e: any) => e.currentTarget.style.background = 'transparent'}
-              >Contact Sales</button>
-            </div>
-
-          </div>
-        </section>
-
-        {/* ── INTEGRATIONS ── */}
-        <section id="integrations" style="padding: 96px 32px; max-width: 1160px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 64px;">
-            <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Integrations</span>
-            <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: var(--brand-text-primary); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Connects to your stack</h2>
-            <p style="font-size: 17px; color: var(--brand-text-muted); max-width: 520px; margin: 0 auto; line-height: 1.65;">Alpine plays well with the tools you already use — from payment gateways to accounting platforms and compliance systems.</p>
-          </div>
- 
-          <div class="grid-4-to-2-to-1" style="display: grid; gap: 16px; margin-bottom: 48px;">
-            {[
-              { name: 'Payments', items: ['Visa/Mastercard', 'Mobile Money', 'Bank Transfer', 'Cash Drawer'] },
-              { name: 'Accounting', items: ['QuickBooks', 'Sage', 'Xero', 'Wave (coming soon)'] },
-              { name: 'Fiscal', items: ['ZIMRA e-Invoice', 'KRA eTIMS', 'ZRAU Fiscalisation', 'NUST Custom'] },
-              { name: 'Operations', items: ['Supplier EDI', 'Excel / CSV', 'REST API', 'Webhooks'] },
-            ].map((cat: any) => (
-              <div key={cat.name} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 16px; padding: 24px;">
-                <div style="font-size: 11px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">{cat.name}</div>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                  {cat.items.map((item: string) => (
-                    <div key={item} style="display: flex; align-items: center; gap: 8px;">
-                      <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--brand-green); flex-shrink: 0;"></div>
-                      <span style="font-size: 13px; color: var(--brand-text-body);">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div style="text-align: center;">
-            <div style="display: inline-flex; align-items: center; gap: 10px; background: var(--brand-bg-subtle); border: 1px solid var(--brand-border); border-radius: 999px; padding: 12px 24px;">
-              <span style="font-size: 13px; font-weight: 500; color: var(--brand-text-body);">Building something custom?</span>
-              <a href="#" style="font-size: 13px; font-weight: 700; color: var(--brand-text-primary); text-decoration: none;">Explore the API →</a>
-            </div>
-          </div>
-        </section>
-
-        {/* ── ABOUT ── */}
-        <section id="about" style="padding: 96px 32px; background: var(--brand-navy-dark);">
-          <div class="grid-2-to-1" style="max-width: 1160px; margin: 0 auto; align-items: center;">
-            <div>
-              <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;">About</span>
-              <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 24px;">Built for African retail, by people who understand it</h2>
-              <p style="font-size: 16px; color: #9ca3af; line-height: 1.75; margin-bottom: 20px;">Alpine is built by Kibologic — a software company operating across Southern and East Africa. We've seen the gaps that generic ERP systems leave in regional markets, and we're building the platform we always wished existed.</p>
-              <p style="font-size: 16px; color: #9ca3af; line-height: 1.75; margin-bottom: 36px;">We focus on reliability first. Alpine works offline, handles local fiscal requirements, and scales from a single kiosk to a national chain.</p>
-              <div style="display: flex; gap: 32px;">
-                {[
-                  { stat: '2026', label: 'Founded' },
-                  { stat: '5+', label: 'Countries targeted' },
-                  { stat: '∞', label: 'Coffee consumed' },
-                ].map((s: any) => (
-                  <div key={s.label}>
-                    <div style="font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.04em;">{s.stat}</div>
-                    <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">{s.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-              {[
-                { icon: '🎯', title: 'Our Mission', desc: 'Make enterprise-grade retail software accessible to every business in Africa — from street markets to national supermarkets.' },
-                { icon: '🛡️', title: 'Our Values', desc: 'Reliability over features. We ship things that work offline, handle edge cases, and never lose a transaction.' },
-                { icon: '🤝', title: 'Open Core', desc: "Alpine's core is open. POS, inventory, and team management are free forever. We make money on enterprise extensions and support." },
-              ].map((val: any) => (
-                <div key={val.title} style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px;">
-                  <div style="display: flex; align-items: flex-start; gap: 14px;">
-                    <div style="font-size: 22px; flex-shrink: 0; margin-top: 2px;">{val.icon}</div>
-                    <div>
-                      <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">{val.title}</div>
-                      <div style="font-size: 13px; color: #6b7280; line-height: 1.65;">{val.desc}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── FOOTER ── */}
-        <footer style="background: var(--brand-navy-dark); border-top: 1px solid rgba(255,255,255,0.06); padding: 32px;">
-          <div style="max-width: 1160px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 24px; height: 24px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                <span style="color: var(--brand-navy-dark); font-size: 11px; font-weight: 800;">A</span>
-              </div>
-              <span style="font-size: 14px; font-weight: 700; color: #fff;">Alpine</span>
-              <span style="font-size: 12px; color: #9ca3af; margin-left: 8px;">by Kibologic</span>
-            </div>
-
-            <div style="display: flex; gap: 24px; align-items: center;">
-              <a href="https://github.com/kibologic/alpine-website/issues/new" target="_blank" style="font-size: 13px; color: #9ca3af; text-decoration: none; transition: color 0.2s;" onmouseover={(e: any) => { e.currentTarget.style.color = '#fff'; }} onmouseout={(e: any) => { e.currentTarget.style.color = '#9ca3af'; }}>Report a Bug</a>
-              <a href="https://github.com/kibologic/alpine-website/discussions" target="_blank" style="font-size: 13px; color: #9ca3af; text-decoration: none; transition: color 0.2s;" onmouseover={(e: any) => { e.currentTarget.style.color = '#fff'; }} onmouseout={(e: any) => { e.currentTarget.style.color = '#9ca3af'; }}>Suggestions</a>
-              <a href="https://github.com/kibologic/alpine-website" target="_blank" style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #9ca3af; text-decoration: none; transition: color 0.2s;" onmouseover={(e: any) => { e.currentTarget.style.color = '#fff'; }} onmouseout={(e: any) => { e.currentTarget.style.color = '#9ca3af'; }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                </svg>
-                Source
-              </a>
-            </div>
-
-            <div style="font-size: 12px; color: #6b7280;">© 2026 Kibologic. All rights reserved.</div>
-          </div>
-        </footer>
-
-        {/* ── WAITLIST MODAL ── */}
-        {this.showWaitlist ? (
-          <div
-            style="position: fixed; inset: 0; background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px;"
-            onclick={(e: any) => { if (e.target === e.currentTarget) this.closeWaitlist(); }}
-          >
-            <div style="background: var(--brand-bg-surface); border-radius: 20px; width: 100%; max-width: 440px; padding: 40px; box-shadow: var(--brand-shadow); border: 1px solid var(--brand-border); position: relative;">
-
-              {this.submitted ? (
-                <div style="text-align: center; padding: 16px 0;">
-                  <div style="width: 52px; height: 52px; background: var(--brand-bg-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 22px; color: var(--brand-green);">✓</div>
-                  <h3 style="font-size: 20px; font-weight: 700; color: var(--brand-text-primary); margin-bottom: 10px; letter-spacing: -0.02em;">You're on the list.</h3>
-                  <p style="font-size: 14px; color: var(--brand-text-muted); line-height: 1.6;">We'll reach out when your spot is ready. Keep building something great.</p>
-                  <button
-                    onclick={() => this.closeWaitlist()}
-                    style="margin-top: 28px; font-size: 14px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); border: none; padding: 12px 28px; border-radius: 999px; cursor: pointer; width: 100%; transition: opacity 0.15s;"
-                    onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
-                    onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
-                  >Close</button>
-                </div>
-              ) : (
-                <div>
-                  <button
-                    onclick={() => this.closeWaitlist()}
-                    style="position: absolute; top: 20px; right: 20px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--brand-border); background: transparent; color: var(--brand-text-muted); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;"
-                    onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
-                    onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--brand-text-muted)'; }}
-                  >✕</button>
-
-                  <h3 style="font-size: 22px; font-weight: 800; color: var(--brand-text-primary); margin-bottom: 8px; letter-spacing: -0.03em;">Get early access</h3>
-                  <p style="font-size: 14px; color: var(--brand-text-muted); line-height: 1.55; margin-bottom: 28px;">
-                    Alpine is in private beta. Drop your email and we'll contact you when your spot opens.
-                  </p>
-
-                  <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <input
-                      type="email"
-                      placeholder="you@company.com"
-                      value={this.email}
-                      oninput={(e: any) => { this.email = e.target.value; this.emailError = ''; this.scheduleUpdate?.(); }}
-                      onkeydown={(e: any) => { if (e.key === 'Enter') this.submitWaitlist(); }}
-                      style={`width: 100%; padding: 13px 16px; border-radius: 10px; border: 1.5px solid ${this.emailError ? '#dc2626' : 'var(--brand-border)'}; font-size: 15px; color: var(--brand-text-primary); background: var(--brand-bg-surface); outline: none; transition: border-color 0.15s; font-family: inherit;`}
-                      onfocus={(e: any) => { e.target.style.borderColor = 'var(--brand-green)'; }}
-                      onblur={(e: any) => { e.target.style.borderColor = this.emailError ? '#dc2626' : 'var(--brand-border)'; }}
-                    />
-                    {this.emailError ? (
-                      <span style="font-size: 12px; color: #dc2626;">{this.emailError}</span>
-                    ) : null}
-                    <button
-                      onclick={() => this.submitWaitlist()}
-                      disabled={this.submitting}
-                      style={`width: 100%; padding: 13px; border-radius: 999px; border: none; font-size: 15px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); cursor: ${this.submitting ? 'not-allowed' : 'pointer'}; opacity: ${this.submitting ? '0.6' : '1'}; transition: opacity 0.15s; font-family: inherit;`}
-                    >{this.submitting ? 'Joining…' : 'Join the Waitlist'}</button>
-                  </div>
-
-                  <p style="text-align: center; font-size: 12px; color: var(--brand-text-muted); margin-top: 16px; opacity: 0.8;">No spam, ever. Unsubscribe anytime.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : null}
-
       </div>
     );
   }
 }
+

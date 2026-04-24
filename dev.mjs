@@ -3,13 +3,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync, readFileSync } from 'node:fs';
 import { SwiteServer } from '@kibologic/swite';
+import { resolvePort } from '../registry/resolve.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const port = resolvePort('alpine-website', 'frontend_port', 'development', 5000);
 
 const server = new SwiteServer({
   root: path.resolve(__dirname, 'app'),
   publicDir: 'public',
-  port: parseInt(process.env.PORT || '5000', 10),
+  port: parseInt(process.env.PORT || String(port), 10),
   host: '0.0.0.0',
   open: false,
 });
@@ -43,4 +45,4 @@ server.app.use((req, res, next) => {
 });
 
 await server.start();
-console.log('[alpine-website] running on http://localhost:5000');
+console.log(`[alpine-website] running on http://localhost:${parseInt(process.env.PORT || String(port), 10)}`);
