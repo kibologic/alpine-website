@@ -4,6 +4,7 @@ component LandingPage {
   props = {};
 
   state { let showWaitlist: boolean = false; }
+  state { let category: '' | 'business' | 'startup' | 'solo_seller' = ''; }
   state { let email: string = ''; }
   state { let submitted: boolean = false; }
   state { let submitting: boolean = false; }
@@ -164,6 +165,11 @@ component LandingPage {
   }
 
   async submitWaitlist() {
+    if (!this.category) {
+      this.emailError = 'Please select a category.';
+      this.scheduleUpdate?.();
+      return;
+    }
     const e = this.email.trim();
     if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
       this.emailError = 'Please enter a valid email address.';
@@ -315,13 +321,13 @@ component LandingPage {
           {/* Headline */}
           <h1 style="font-size: clamp(40px, 6vw, 64px); font-weight: 800; color: var(--brand-navy); line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 24px; max-width: 760px; margin-left: auto; margin-right: auto;">
             Alpine ERP<br />
-            <span style="color: var(--brand-green);">SwissJS</span> frontend + <span style="color: var(--brand-green);">FastAPI</span> services
+            Inventory, sales, and operations in one system
           </h1>
 
           {/* Subheadline */}
           <p style="font-size: 18px; font-weight: 400; color: var(--brand-text-muted); line-height: 1.65; max-width: 640px; margin: 0 auto 40px; letter-spacing: -0.01em;">
-            Alpine is a multi-tenant ERP platform built around an append-only ledger core and event-driven services. This site is for Kibologic engineers:
-            how the workspace is wired (repos, ports, services) and how tracked releases work.
+            Alpine helps retail and trade businesses run inventory, point of sale, purchasing, and reporting with clear controls and an audit-ready trail.
+            Join the waitlist to get early access when your category opens.
           </p>
 
           {/* CTAs */}
@@ -331,12 +337,12 @@ component LandingPage {
               style="font-size: 15px; font-weight: 600; color: #fff; background: var(--brand-navy); border: none; padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;"
               onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
               onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
-            >Local Dev Notes</button>
+            >Join the waitlist</button>
             <button
               style="font-size: 15px; font-weight: 500; color: var(--brand-text-body); background: var(--brand-bg-subtle); border: 1px solid var(--brand-border); padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: background 0.15s;"
               onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--color-snow-200)'; }}
               onmouseout={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
-            >How releases work →</button>
+            >See the product →</button>
           </div>
         </section>
 
@@ -351,7 +357,7 @@ component LandingPage {
               <div style="width: 10px; height: 10px; border-radius: 50%; background: #fef3c7; border: 1px solid #fcd34d;"></div>
               <div style="width: 10px; height: 10px; border-radius: 50%; background: #dcfce7; border: 1px solid #86efac;"></div>
               <div style="flex: 1; margin: 0 16px; background: var(--brand-bg-subtle); border-radius: 6px; height: 24px; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 11px; color: var(--brand-text-muted); font-family: monospace;">app.alpine.co</span>
+                <a href="https://harmonious-dream-production-60cf.up.railway.app/" target="_blank" rel="noreferrer" style="font-size: 11px; color: var(--brand-text-muted); font-family: monospace; text-decoration: none;">harmonious-dream…railway.app</a>
               </div>
             </div>
 
@@ -517,18 +523,20 @@ component LandingPage {
 
           <div class="grid-3-to-1" style="display: grid; gap: 24px;">
             {[
-              { icon: '🏪', title: 'Point of Sale', desc: 'Fast, reliable POS terminal that works offline. Built for high-volume retail environments with multi-till support.' },
-              { icon: '📦', title: 'Inventory Management', desc: 'Track stock across multiple outlets in real-time. Set reorder levels, run stock counts, and import from Excel.' },
-              { icon: '📊', title: 'Analytics & Reports', desc: 'Live dashboards and customisable reports. Understand your sales, margins, and top performers at a glance.' },
-              { icon: '👥', title: 'Team Management', desc: 'Invite staff, assign roles, and control permissions granularly. Full audit log for every action taken.' },
-              { icon: '🔗', title: 'Integrations', desc: 'Connect to your existing tools — accounting software, payment gateways, fiscal compliance systems and more.' },
-              { icon: '🏢', title: 'Multi-Outlet', desc: 'One account, multiple locations. Switch between outlets, consolidate reports, and manage stock transfers centrally.' },
+              { icon: 'POS', title: 'Point of Sale', desc: 'Fast, reliable POS terminal that works offline. Built for high-volume retail environments with multi-till support.' },
+              { icon: 'INV', title: 'Inventory Management', desc: 'Track stock across multiple outlets in real-time. Set reorder levels, run stock counts, and import from Excel.' },
+              { icon: 'RPT', title: 'Analytics & Reports', desc: 'Live dashboards and customisable reports. Understand your sales, margins, and top performers at a glance.' },
+              { icon: 'TEAM', title: 'Team Management', desc: 'Invite staff, assign roles, and control permissions granularly. Full audit log for every action taken.' },
+              { icon: 'API', title: 'Integrations', desc: 'Connect to your existing tools — accounting software, payment gateways, fiscal compliance systems and more.' },
+              { icon: 'MUL', title: 'Multi-Outlet', desc: 'One account, multiple locations. Switch between outlets, consolidate reports, and manage stock transfers centrally.' },
             ].map((f: any) => (
               <div key={f.title} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 16px; padding: 28px; transition: box-shadow 0.2s;"
                 onmouseover={(e: any) => { e.currentTarget.style.boxShadow = 'var(--brand-shadow)'; }}
                 onmouseout={(e: any) => { e.currentTarget.style.boxShadow = 'none'; }}
               >
-                <div style="font-size: 28px; margin-bottom: 14px;">{f.icon}</div>
+                <div style="display: inline-flex; align-items: center; justify-content: center; height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--brand-border); background: var(--brand-bg-subtle); font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: var(--brand-text-primary); margin-bottom: 14px;">
+                  {f.icon}
+                </div>
                 <div style="font-size: 15px; font-weight: 700; color: var(--brand-text-primary); margin-bottom: 8px; letter-spacing: -0.01em;">{f.title}</div>
                 <div style="font-size: 13px; color: var(--brand-text-muted); line-height: 1.65;">{f.desc}</div>
               </div>
@@ -554,20 +562,20 @@ component LandingPage {
                   highlight: false, isDark: this.theme === 'dark' 
                 },
                 { 
-                  name: 'Plus', price: 'K 25,000', period: '/mo', 
+                  name: 'Pro', price: 'MWK 35,000', period: '/mo', 
                   desc: 'For growing retail businesses operating at scale.', 
                   features: ['15 Users', '3,000 Inventory Units', '5 POS Registers', '5,000 Customers', '3 Outlet Locations', '5 Device Bindings', 'Priority support', 'Basic Analytics'], 
                   highlight: true, isDark: this.theme === 'dark' 
                 },
                 { 
-                  name: 'Premium', price: 'K 45,000', period: '/mo', 
+                  name: 'Premium', price: 'MWK 50,000', period: '/mo', 
                   desc: 'For high-volume operations scaling across regions.', 
-                  features: ['50 Users', '20,000 Inventory Units', '10 POS (+ add-ons)', '50,000 Customers', '15 Outlet Locations', '15 Device Bindings', 'Audit Logs', 'API Rate Limits'], 
+                  features: ['25 Users', '20,000 Inventory Units', '10 POS (+ add-ons)', '50,000 Customers', '15 Outlet Locations', '15 Device Bindings', 'Audit Logs', 'API Rate Limits'], 
                   highlight: false, isDark: this.theme === 'dark' 
                 },
               ].map((plan: any) => (
                 <div key={plan.name} style={`background: ${plan.highlight ? (plan.isDark ? 'var(--brand-bg-surface)' : 'var(--brand-bg-inverse)') : 'var(--brand-bg-surface)'}; border: 2px solid ${plan.highlight && plan.isDark ? 'var(--brand-green)' : 'var(--brand-border)'}; border-radius: 20px; padding: 32px; position: relative; transition: transform 0.2s;`}>
-                  {plan.highlight ? <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--brand-green); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10;">Most Popular</div> : null}
+                  {plan.highlight ? <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--brand-green); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10;">Most Suitable</div> : null}
                   <div style={`font-size: 13px; font-weight: 700; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.6)' : 'var(--brand-text-muted)'}; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;`}>{plan.name}</div>
                   <div style={`font-size: 32px; font-weight: 800; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'}; letter-spacing: -0.04em; margin-bottom: 4px;`}>{plan.price}</div>
                   {plan.period ? <div style={`font-size: 12px; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.4)' : 'var(--brand-text-muted)'}; margin-bottom: 16px;`}>{plan.period}</div> : <div style="margin-bottom: 16px;"></div>}
@@ -667,13 +675,15 @@ component LandingPage {
             </div>
             <div style="display: flex; flex-direction: column; gap: 16px;">
               {[
-                { icon: '🎯', title: 'Our Mission', desc: 'Make enterprise-grade retail software accessible to every business in Africa — from street markets to national supermarkets.' },
-                { icon: '🛡️', title: 'Our Values', desc: 'Reliability over features. We ship things that work offline, handle edge cases, and never lose a transaction.' },
-                { icon: '🤝', title: 'Open Core', desc: "Alpine's core is open. POS, inventory, and team management are free forever. We make money on enterprise extensions and support." },
+                { icon: 'MISSION', title: 'Our Mission', desc: 'Make enterprise-grade retail software accessible to every business in Africa — from street markets to national supermarkets.' },
+                { icon: 'VALUES', title: 'Our Values', desc: 'Reliability over features. We ship things that work offline, handle edge cases, and never lose a transaction.' },
+                { icon: 'CORE', title: 'Open Core', desc: "Alpine's core is open. POS, inventory, and team management are free forever. We make money on enterprise extensions and support." },
               ].map((val: any) => (
                 <div key={val.title} style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px;">
                   <div style="display: flex; align-items: flex-start; gap: 14px;">
-                    <div style="font-size: 22px; flex-shrink: 0; margin-top: 2px;">{val.icon}</div>
+                    <div style="display: inline-flex; align-items: center; justify-content: center; height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); font-size: 11px; font-weight: 900; letter-spacing: 0.1em; color: rgba(255,255,255,0.9); flex-shrink: 0; margin-top: 2px;">
+                      {val.icon}
+                    </div>
                     <div>
                       <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">{val.title}</div>
                       <div style="font-size: 13px; color: #6b7280; line-height: 1.65;">{val.desc}</div>
@@ -742,10 +752,22 @@ component LandingPage {
 
                   <h3 style="font-size: 22px; font-weight: 800; color: var(--brand-text-primary); margin-bottom: 8px; letter-spacing: -0.03em;">Get early access</h3>
                   <p style="font-size: 14px; color: var(--brand-text-muted); line-height: 1.55; margin-bottom: 28px;">
-                    Alpine is in private beta. Drop your email and we'll contact you when your spot opens.
+                    Alpine is in private beta. Choose your category and we’ll reach out when your spot opens.
                   </p>
 
                   <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <select
+                      value={this.category}
+                      onchange={(e: any) => { this.category = e.target.value; this.scheduleUpdate?.(); }}
+                      style="width: 100%; padding: 13px 16px; border-radius: 10px; border: 1.5px solid var(--brand-border); font-size: 15px; color: var(--brand-text-primary); background: var(--brand-bg-surface); outline: none; transition: border-color 0.15s; font-family: inherit;"
+                      onfocus={(e: any) => { e.target.style.borderColor = 'var(--brand-green)'; }}
+                      onblur={(e: any) => { e.target.style.borderColor = 'var(--brand-border)'; }}
+                    >
+                      <option value="">Select your category…</option>
+                      <option value="business">Business</option>
+                      <option value="startup">Startup</option>
+                      <option value="solo_seller">Solo Seller</option>
+                    </select>
                     <input
                       type="email"
                       placeholder="you@company.com"
