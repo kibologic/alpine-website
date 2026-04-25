@@ -47,6 +47,34 @@ component LandingPage {
           .grid-2-to-1 { gap: 48px; }
         }
 
+        /* Alpine website specific helpers */
+        .alp-icon {
+          width: 22px;
+          height: 22px;
+          color: var(--brand-green);
+          display: block;
+        }
+        .alp-icon-badge {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          border: 1px solid var(--brand-border);
+          background: var(--brand-bg-subtle);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 14px;
+        }
+        .alp-icon-badge svg { width: 22px; height: 22px; }
+
+        .alp-mock-shell { height: 520px; }
+        @media (max-width: 860px) {
+          .alp-mock-shell { height: 420px; }
+        }
+        @media (max-width: 420px) {
+          .alp-mock-shell { height: 380px; }
+        }
+
         :root {
           /* Official Alpine ERP Scale */
           --color-snow-50:  #FAFCFF;
@@ -186,6 +214,112 @@ component LandingPage {
     this.scheduleUpdate?.();
   }
 
+  icon(name: string) {
+    const common = {
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': '2',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+      class: 'alp-icon',
+      viewBox: '0 0 24 24',
+    } as any;
+
+    if (name === 'pos') {
+      return (
+        <svg {...common}>
+          <rect x="4" y="3" width="16" height="8" rx="2"></rect>
+          <path d="M7 21h10"></path>
+          <path d="M9 21v-6h6v6"></path>
+        </svg>
+      );
+    }
+    if (name === 'inventory') {
+      return (
+        <svg {...common}>
+          <path d="M21 8l-9-5-9 5 9 5 9-5z"></path>
+          <path d="M3 8v8l9 5 9-5V8"></path>
+          <path d="M12 13v8"></path>
+        </svg>
+      );
+    }
+    if (name === 'reports') {
+      return (
+        <svg {...common}>
+          <path d="M4 19V5"></path>
+          <path d="M4 19h16"></path>
+          <path d="M8 15v-3"></path>
+          <path d="M12 15V8"></path>
+          <path d="M16 15v-5"></path>
+        </svg>
+      );
+    }
+    if (name === 'team') {
+      return (
+        <svg {...common}>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
+          <path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path>
+          <path d="M22 21v-2a3 3 0 0 0-2-2.82"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      );
+    }
+    if (name === 'integrations') {
+      return (
+        <svg {...common}>
+          <path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1"></path>
+          <path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1"></path>
+        </svg>
+      );
+    }
+    if (name === 'multi') {
+      return (
+        <svg {...common}>
+          <rect x="3" y="3" width="8" height="8" rx="2"></rect>
+          <rect x="13" y="3" width="8" height="8" rx="2"></rect>
+          <rect x="3" y="13" width="8" height="8" rx="2"></rect>
+          <rect x="13" y="13" width="8" height="8" rx="2"></rect>
+        </svg>
+      );
+    }
+    if (name === 'mission') {
+      return (
+        <svg {...common}>
+          <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"></path>
+        </svg>
+      );
+    }
+    if (name === 'values') {
+      return (
+        <svg {...common}>
+          <path d="M12 22s8-4 8-10V6l-8-4-8 4v6c0 6 8 10 8 10z"></path>
+          <path d="M9 12l2 2 4-4"></path>
+        </svg>
+      );
+    }
+    if (name === 'core') {
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="M4.9 4.9l1.4 1.4"></path>
+          <path d="M17.7 17.7l1.4 1.4"></path>
+          <path d="M19.1 4.9l-1.4 1.4"></path>
+          <path d="M6.3 17.7l-1.4 1.4"></path>
+        </svg>
+      );
+    }
+
+    return (
+      <svg {...common}>
+        <circle cx="12" cy="12" r="9"></circle>
+      </svg>
+    );
+  }
+
   render() {
     return (
       <div style="min-height: 100vh; background: var(--brand-bg-page); color: var(--brand-text-body); overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease;">
@@ -313,15 +447,15 @@ component LandingPage {
         <section style="padding: 88px 32px 0; text-align: center; max-width: 1160px; margin: 0 auto;">
 
           {/* Announcement badge */}
-          <div style="display: inline-flex; align-items: center; gap: 8px; background: #f5f5f5; border: 1px solid #e8e8e8; border-radius: 999px; padding: 5px 14px 5px 6px; margin-bottom: 36px;">
-            <span style="background: #0a0a0a; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase;">New</span>
-            <span style="font-size: 13px; font-weight: 500; color: #374151;">Tracked releases + fixed ports via service registry</span>
+          <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--brand-bg-subtle); border: 1px solid var(--brand-border); border-radius: 999px; padding: 5px 14px 5px 6px; margin-bottom: 36px;">
+            <span style="background: var(--brand-bg-inverse); color: var(--brand-text-inverse); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase;">New</span>
+            <span style="font-size: 13px; font-weight: 500; color: var(--brand-text-body);">Offline-ready POS + inventory with audit-ready reporting</span>
           </div>
 
           {/* Headline */}
           <h1 style="font-size: clamp(40px, 6vw, 64px); font-weight: 800; color: var(--brand-navy); line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 24px; max-width: 760px; margin-left: auto; margin-right: auto;">
             Alpine ERP<br />
-            Inventory, sales, and operations in one system
+            The software that runs your business
           </h1>
 
           {/* Subheadline */}
@@ -362,7 +496,7 @@ component LandingPage {
             </div>
 
             {/* App shell */}
-            <div style="display: flex; height: 520px; background: var(--brand-bg-page);">
+            <div class="alp-mock-shell" style="display: flex; background: var(--brand-bg-page);">
 
               {/* Sidebar */}
               <div style="width: 200px; flex-shrink: 0; background: var(--mockup-sb-bg); border-right: 1px solid rgba(255,255,255,0.08); padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; transition: background 0.3s ease;">
@@ -523,20 +657,18 @@ component LandingPage {
 
           <div class="grid-3-to-1" style="display: grid; gap: 24px;">
             {[
-              { icon: 'POS', title: 'Point of Sale', desc: 'Fast, reliable POS terminal that works offline. Built for high-volume retail environments with multi-till support.' },
-              { icon: 'INV', title: 'Inventory Management', desc: 'Track stock across multiple outlets in real-time. Set reorder levels, run stock counts, and import from Excel.' },
-              { icon: 'RPT', title: 'Analytics & Reports', desc: 'Live dashboards and customisable reports. Understand your sales, margins, and top performers at a glance.' },
-              { icon: 'TEAM', title: 'Team Management', desc: 'Invite staff, assign roles, and control permissions granularly. Full audit log for every action taken.' },
-              { icon: 'API', title: 'Integrations', desc: 'Connect to your existing tools — accounting software, payment gateways, fiscal compliance systems and more.' },
-              { icon: 'MUL', title: 'Multi-Outlet', desc: 'One account, multiple locations. Switch between outlets, consolidate reports, and manage stock transfers centrally.' },
+              { icon: 'pos', title: 'Point of Sale', desc: 'Fast, reliable POS terminal that works offline. Built for high-volume retail environments with multi-till support.' },
+              { icon: 'inventory', title: 'Inventory Management', desc: 'Track stock across multiple outlets in real-time. Set reorder levels, run stock counts, and import from Excel.' },
+              { icon: 'reports', title: 'Analytics & Reports', desc: 'Live dashboards and customisable reports. Understand your sales, margins, and top performers at a glance.' },
+              { icon: 'team', title: 'Team Management', desc: 'Invite staff, assign roles, and control permissions granularly. Full audit log for every action taken.' },
+              { icon: 'integrations', title: 'Integrations', desc: 'Connect to your existing tools — accounting software, payment gateways, fiscal compliance systems and more.' },
+              { icon: 'multi', title: 'Multi-Outlet', desc: 'One account, multiple locations. Switch between outlets, consolidate reports, and manage stock transfers centrally.' },
             ].map((f: any) => (
               <div key={f.title} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 16px; padding: 28px; transition: box-shadow 0.2s;"
                 onmouseover={(e: any) => { e.currentTarget.style.boxShadow = 'var(--brand-shadow)'; }}
                 onmouseout={(e: any) => { e.currentTarget.style.boxShadow = 'none'; }}
               >
-                <div style="display: inline-flex; align-items: center; justify-content: center; height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--brand-border); background: var(--brand-bg-subtle); font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: var(--brand-text-primary); margin-bottom: 14px;">
-                  {f.icon}
-                </div>
+                <div class="alp-icon-badge">{this.icon(f.icon)}</div>
                 <div style="font-size: 15px; font-weight: 700; color: var(--brand-text-primary); margin-bottom: 8px; letter-spacing: -0.01em;">{f.title}</div>
                 <div style="font-size: 13px; color: var(--brand-text-muted); line-height: 1.65;">{f.desc}</div>
               </div>
@@ -675,14 +807,14 @@ component LandingPage {
             </div>
             <div style="display: flex; flex-direction: column; gap: 16px;">
               {[
-                { icon: 'MISSION', title: 'Our Mission', desc: 'Make enterprise-grade retail software accessible to every business in Africa — from street markets to national supermarkets.' },
-                { icon: 'VALUES', title: 'Our Values', desc: 'Reliability over features. We ship things that work offline, handle edge cases, and never lose a transaction.' },
-                { icon: 'CORE', title: 'Open Core', desc: "Alpine's core is open. POS, inventory, and team management are free forever. We make money on enterprise extensions and support." },
+                { icon: 'mission', title: 'Our Mission', desc: 'Make enterprise-grade retail software accessible to every business in Africa — from street markets to national supermarkets.' },
+                { icon: 'values', title: 'Our Values', desc: 'Reliability over features. We ship things that work offline, handle edge cases, and never lose a transaction.' },
+                { icon: 'core', title: 'Open Core', desc: "Alpine's core is open. POS, inventory, and team management are free forever. We make money on enterprise extensions and support." },
               ].map((val: any) => (
                 <div key={val.title} style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px;">
                   <div style="display: flex; align-items: flex-start; gap: 14px;">
-                    <div style="display: inline-flex; align-items: center; justify-content: center; height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); font-size: 11px; font-weight: 900; letter-spacing: 0.1em; color: rgba(255,255,255,0.9); flex-shrink: 0; margin-top: 2px;">
-                      {val.icon}
+                    <div style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); flex-shrink: 0; margin-top: 2px; color: rgba(255,255,255,0.9);">
+                      {this.icon(val.icon)}
                     </div>
                     <div>
                       <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">{val.title}</div>
