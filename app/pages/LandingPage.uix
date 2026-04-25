@@ -198,7 +198,7 @@ component LandingPage {
 
             {/* Center links (Desktop-only) */}
             <div class="desktop-only" style="align-items: center; gap: 36px;">
-              {[['Features', '/features', 'features'], ['Pricing', '/pricing', 'pricing'], ['Integrations', '/integrations', 'integrations'], ['About', '/about', 'about']].map(([label, href, id]: [string, string, string]) => (
+              {[['Architecture', '/features', 'features'], ['Releases', '/pricing', 'pricing'], ['Services', '/integrations', 'integrations'], ['Repos', '/about', 'about']].map(([label, href, id]: [string, string, string]) => (
                 <a key={label} href={href}
                   style={`font-size: 14px; font-weight: ${this.activeSection === id ? '700' : '500'}; color: ${this.activeSection === id ? 'var(--brand-text-primary)' : 'var(--brand-text-muted)'}; text-decoration: none; transition: color 0.15s; padding-bottom: 2px; border-bottom: ${this.activeSection === id ? '2px solid var(--brand-green)' : '2px solid transparent'};`}
                   onmouseover={(e: any) => { e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
@@ -293,7 +293,7 @@ component LandingPage {
                 <button
                   onclick={() => { this.toggleMobileMenu(); this.openWaitlist(); }}
                   style="width: 100%; padding: 16px; border-radius: 12px; background: var(--brand-bg-inverse); color: var(--brand-text-inverse); border: none; font-size: 16px; font-weight: 700; cursor: pointer;"
-                >Get early access</button>
+                >Local Dev Notes</button>
                 <button
                   onclick={() => this.toggleMobileMenu()}
                   style="width: 100%; padding: 16px; border-radius: 12px; background: var(--brand-bg-subtle); color: var(--brand-text-primary); border: 1px solid var(--brand-border); font-size: 16px; font-weight: 600; cursor: pointer;"
@@ -309,18 +309,19 @@ component LandingPage {
           {/* Announcement badge */}
           <div style="display: inline-flex; align-items: center; gap: 8px; background: #f5f5f5; border: 1px solid #e8e8e8; border-radius: 999px; padding: 5px 14px 5px 6px; margin-bottom: 36px;">
             <span style="background: #0a0a0a; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase;">New</span>
-            <span style="font-size: 13px; font-weight: 500; color: #374151;">Multi-outlet inventory now available</span>
+            <span style="font-size: 13px; font-weight: 500; color: #374151;">Tracked releases + fixed ports via service registry</span>
           </div>
 
           {/* Headline */}
           <h1 style="font-size: clamp(40px, 6vw, 64px); font-weight: 800; color: var(--brand-navy); line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 24px; max-width: 760px; margin-left: auto; margin-right: auto;">
-            The operating system<br />
-            for <span style="color: var(--brand-green);">modern retail</span>
+            Alpine ERP<br />
+            <span style="color: var(--brand-green);">SwissJS</span> frontend + <span style="color: var(--brand-green);">FastAPI</span> services
           </h1>
 
           {/* Subheadline */}
-          <p style="font-size: 18px; font-weight: 400; color: var(--brand-text-muted); line-height: 1.65; max-width: 520px; margin: 0 auto 40px; letter-spacing: -0.01em;">
-            Alpine unifies point of sale, inventory, and team management — one platform built for businesses that move fast.
+          <p style="font-size: 18px; font-weight: 400; color: var(--brand-text-muted); line-height: 1.65; max-width: 640px; margin: 0 auto 40px; letter-spacing: -0.01em;">
+            Alpine is a multi-tenant ERP platform built around an append-only ledger core and event-driven services. This site is for Kibologic engineers:
+            how the workspace is wired (repos, ports, services) and how tracked releases work.
           </p>
 
           {/* CTAs */}
@@ -330,12 +331,12 @@ component LandingPage {
               style="font-size: 15px; font-weight: 600; color: #fff; background: var(--brand-navy); border: none; padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;"
               onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
               onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
-            >Get early access</button>
+            >Local Dev Notes</button>
             <button
               style="font-size: 15px; font-weight: 500; color: var(--brand-text-body); background: var(--brand-bg-subtle); border: 1px solid var(--brand-border); padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: background 0.15s;"
               onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--color-snow-200)'; }}
               onmouseout={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
-            >See how it works →</button>
+            >How releases work →</button>
           </div>
         </section>
 
