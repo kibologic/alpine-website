@@ -1,0 +1,25 @@
+import { SwissComponent } from '@kibologic/core';
+
+export class SocialProof extends SwissComponent {
+  render() {
+    return (
+      <section style="padding: 72px 29px 90px; text-align: center;">
+        <p style="font-size: 11px; font-weight: 800; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 36px;">Trusted by high-performance retailers worldwide</p>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 58px; flex-wrap: wrap; opacity: 0.6; filter: grayscale(1);">
+          {[
+            { name: 'Freshmart', weight: 800 },
+            { name: 'UrbanGrocers', weight: 700 },
+            { name: 'TradeStar', weight: 600 },
+            { name: 'Nakumat+', weight: 900 },
+            { name: 'ShopOne', weight: 700 }
+          ].map((logo: any) => (
+            <div key={logo.name} style="display: flex; align-items: center; gap: 7px;">
+               <div style="width: 22px; height: 22px; border: 1.5px solid var(--brand-text-muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900;">{logo.name[0]}</div>
+               <span style={`font-size: 16px; font-weight: ${logo.weight}; color: var(--brand-text-muted); letter-spacing: -0.04em;`}>{logo.name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+}

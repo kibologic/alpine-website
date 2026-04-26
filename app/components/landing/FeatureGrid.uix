@@ -1,0 +1,59 @@
+import { SwissComponent } from '@kibologic/core';
+
+export class FeatureGrid extends SwissComponent {
+  render() {
+    const features = [
+      {
+        title: "High-Performance POS",
+        desc: "A lightning-fast terminal that handles thousands of SKUs and works flawlessly offline.",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`
+      },
+      {
+        title: "Intelligent Inventory",
+        desc: "Automatic stock tracking across branches with predictive reordering and audit trails.",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-4-9 4 9 4 9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 16l9 4 9-4"/></svg>`
+      },
+      {
+        title: "Multi-Store Control",
+        desc: "Manage 10 or 100 branches from one central dashboard with granular user permissions.",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
+      },
+      {
+        title: "Financial Reporting",
+        desc: "Real-time visibility into margins, tax compliance, and cash flow across your entire network.",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`
+      },
+      {
+        title: "Global Compliance",
+        desc: "Built-in adapters for international tax authorities and fiscal requirements.",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`
+      },
+      {
+        title: "Developer First",
+        desc: "A robust REST API and webhook system to integrate with your existing toolstack.",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`
+      }
+    ];
+
+    return (
+      <section id="features" class="section-padding" style="background: var(--brand-bg-subtle);">
+        <div class="container">
+          <div style="text-align: center; margin-bottom: 72px;">
+            <span style="display: inline-block; font-size: 11px; font-weight: 800; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 14px;">Capabilities</span>
+            <h2 style="font-size: clamp(29px, 5vw, 43px); font-weight: 800; color: var(--brand-navy); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 18px;">Built for scale, tuned for speed</h2>
+          </div>
+
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px;">
+            {features.map(f => (
+              <div key={f.title} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 18px; padding: 32px; transition: all 0.2s ease;" onmouseover={(e: any) => e.currentTarget.style.borderColor = 'var(--brand-green)'} onmouseout={(e: any) => e.currentTarget.style.borderColor = 'var(--brand-border)'}>
+                <div class="alp-icon-badge" innerHTML={f.icon}></div>
+                <h3 style="font-size: 17px; font-weight: 800; color: var(--brand-navy); margin-bottom: 11px; letter-spacing: -0.01em;">{f.title}</h3>
+                <p style="font-size: 14px; color: var(--brand-text-body); line-height: 1.6;">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+}

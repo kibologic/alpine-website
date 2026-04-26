@@ -1,0 +1,108 @@
+import { SwissComponent } from '@kibologic/core';
+
+export class WaitlistModal extends SwissComponent {
+  state {
+    let email: string = '';
+    let category: string = '';
+    let submitting: boolean = false;
+    let submitted: boolean = false;
+    let emailError: string = '';
+  }
+
+  submitWaitlist() {
+    if (!this.email || !this.email.includes('@')) {
+      this.emailError = 'Please enter a valid business email';
+      this.scheduleUpdate();
+      return;
+    }
+    this.submitting = true;
+    this.scheduleUpdate();
+    
+    // Simulate API call
+    setTimeout(() => {
+      this.submitting = false;
+      this.submitted = true;
+      this.scheduleUpdate();
+    }, 1500);
+  }
+
+  render() {
+    const { isOpen, onClose } = this.props;
+
+    if (!isOpen) return null;
+
+    return (
+      <div
+        style="position: fixed; inset: 0; background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(7px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 22px;"
+        onclick={(e: any) => { if (e.target === e.currentTarget) onClose(); }}
+      >
+        <div style="background: var(--brand-bg-surface); border-radius: 18px; width: 100%; max-width: 396px; padding: 36px; box-shadow: var(--brand-shadow); border: 1px solid var(--brand-border); position: relative;">
+
+          {this.submitted ? (
+            <div style="text-align: center; padding: 14px 0;">
+              <div style="width: 47px; height: 47px; background: var(--brand-bg-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 20px; color: var(--brand-green);">✓</div>
+              <h3 style="font-size: 18px; font-weight: 700; color: var(--brand-text-primary); margin-bottom: 9px; letter-spacing: -0.02em;">You're on the list.</h3>
+              <p style="font-size: 13px; color: var(--brand-text-muted); line-height: 1.6;">We'll reach out when your spot is ready. Keep building something great.</p>
+              <button
+                onclick={() => onClose()}
+                style="margin-top: 25px; font-size: 13px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); border: none; padding: 11px 25px; border-radius: 719px; cursor: pointer; width: 100%; transition: opacity 0.15s;"
+                onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
+                onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
+              >Close</button>
+            </div>
+          ) : (
+            <div>
+              <button
+                onclick={() => onClose()}
+                style="position: absolute; top: 18px; right: 18px; width: 29px; height: 29px; border-radius: 50%; border: 1px solid var(--brand-border); background: transparent; color: var(--brand-text-muted); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;"
+                onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
+                onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--brand-text-muted)'; }}
+              >✕</button>
+
+              <h3 style="font-size: 20px; font-weight: 800; color: var(--brand-text-primary); margin-bottom: 7px; letter-spacing: -0.03em;">Get early access</h3>
+              <p style="font-size: 13px; color: var(--brand-text-muted); line-height: 1.55; margin-bottom: 25px;">
+                Alpine is in private beta. Choose your category and we’ll reach out when your spot opens.
+              </p>
+
+              <div style="display: flex; flex-direction: column; gap: 9px;">
+                <select
+                  value={this.category}
+                  onchange={(e: any) => { this.category = e.target.value; this.scheduleUpdate?.(); }}
+                  style="width: 100%; padding: 12px 14px; border-radius: 9px; border: 1.5px solid var(--brand-border); font-size: 14px; color: var(--brand-text-primary); background: var(--brand-bg-surface); outline: none; transition: border-color 0.15s; font-family: inherit;"
+                  onfocus={(e: any) => { e.target.style.borderColor = 'var(--brand-green)'; }}
+                  onblur={(e: any) => { e.target.style.borderColor = 'var(--brand-border)'; }}
+                >
+                  <option value="">Select your category…</option>
+                  <option value="business">Business</option>
+                  <option value="startup">Startup</option>
+                  <option value="solo_seller">Solo Seller</option>
+                </select>
+                <input
+                  type="email"
+                  placeholder="you@company.com"
+                  value={this.email}
+                  oninput={(e: any) => { this.email = e.target.value; this.emailError = ''; this.scheduleUpdate?.(); }}
+                  onkeydown={(e: any) => { if (e.key === 'Enter') this.submitWaitlist(); }}
+                  style={`width: 100%; padding: 12px 14px; border-radius: 9px; border: 1.5px solid ${this.emailError ? '#dc2626' : 'var(--brand-border)'}; font-size: 14px; color: var(--brand-text-primary); background: var(--brand-bg-surface); outline: none; transition: border-color 0.15s; font-family: inherit;`}
+                  onfocus={(e: any) => { e.target.style.borderColor = 'var(--brand-green)'; }}
+                  onblur={(e: any) => { e.target.style.borderColor = this.emailError ? '#dc2626' : 'var(--brand-border)'; }}
+                />
+                {this.emailError ? (
+                  <span style="font-size: 11px; color: #dc2626;">{this.emailError}</span>
+                ) : null}
+                <button
+                  onclick={() => this.submitWaitlist()}
+                  disabled={this.submitting}
+                  class="btn-primary"
+                  style={`width: 100%; padding: 14px; border-radius: 719px; border: none; font-size: 14px; font-weight: 700; cursor: ${this.submitting ? 'not-allowed' : 'pointer'}; opacity: ${this.submitting ? '0.6' : '1'}; transition: all 0.2s ease; font-family: inherit;`}
+                >{this.submitting ? 'Joining…' : 'Join the Waitlist'}</button>
+              </div>
+
+              <p style="text-align: center; font-size: 11px; color: var(--brand-text-muted); margin-top: 14px; opacity: 0.8;">No spam, ever. Unsubscribe anytime.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+}

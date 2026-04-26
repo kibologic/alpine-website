@@ -1,5 +1,5 @@
 import { mount, Signal } from '@kibologic/core';
-import { LandingPage } from './pages/LandingPage.uix';
+import LandingPage from './pages/LandingPage.uix';
 
 const route$ = new Signal(window.location.pathname);
 

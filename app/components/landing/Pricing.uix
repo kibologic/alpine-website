@@ -1,0 +1,58 @@
+import { SwissComponent } from '@kibologic/core';
+
+export class Pricing extends SwissComponent {
+  render() {
+    const { theme, openWaitlist } = this.props;
+
+    return (
+      <section id="pricing" style="padding: 126px 29px; background: var(--brand-bg-subtle);">
+        <div style="max-width: 1080px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 72px;">
+            <span style="display: inline-block; font-size: 12px; font-weight: 750; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 14px;">Pricing</span>
+            <h2 style="font-size: clamp(29px, 5vw, 49px); font-weight: 900; color: var(--brand-text-primary); line-height: 1.05; letter-spacing: -0.04em; margin-bottom: 18px;">Simple, transparent pricing</h2>
+            <p style="font-size: 17px; color: var(--brand-text-muted); max-width: 468px; margin: 0 auto; line-height: 1.6; font-weight: 450;">No surprise fees. Pay per outlet, scale as you grow.</p>
+          </div>
+
+          <div class="grid" style="grid-template-columns: repeat(3, 1fr); max-width: 900px; margin: 0 auto 29px;">
+            {[
+              { name: 'Free', price: 'Free', period: '', desc: 'For small shops and solo operators testing the waters.', features: ['3 Users', '300 Inventory Units', '1 POS Register', '100 Customers', '1 Outlet Location', '1 Device Binding'], highlight: false },
+              { name: 'Pro', price: 'MWK 32k', period: '/mo', desc: 'For growing retail businesses operating at scale.', features: ['15 Users', '3,000 Inventory Units', '5 POS Registers', '5,000 Customers', '3 Outlet Locations', '5 Device Bindings', 'Priority support', 'Basic Analytics'], highlight: true },
+              { name: 'Premium', price: 'MWK 45k', period: '/mo', desc: 'For high-volume operations scaling across regions.', features: ['25 Users', '20,000 Inventory Units', '10 POS (+ add-ons)', '50,000 Customers', '15 Outlet Locations', '15 Device Bindings', 'Audit Logs', 'API Rate Limits'], highlight: false },
+            ].map((plan: any) => (
+              <div key={plan.name} style={`background: ${plan.highlight ? (theme === 'dark' ? 'var(--brand-bg-surface)' : 'var(--brand-bg-inverse)') : 'var(--brand-bg-surface)'}; border: 2.2px solid ${plan.highlight ? (theme === 'dark' ? 'var(--brand-green)' : 'var(--brand-bg-inverse)') : 'var(--brand-border)'}; border-radius: 22px; padding: 36px; position: relative; transition: all 0.3s ease; box-shadow: ${plan.highlight ? 'var(--brand-shadow)' : 'var(--brand-shadow-sm)'};`} onmouseover={(e: any) => { e.currentTarget.style.transform = 'translateY(-7px)'; }} onmouseout={(e: any) => { e.currentTarget.style.transform = 'translateY(0)'; }}>
+                {plan.highlight ? <div style="position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--brand-green); color: #fff; font-size: 10px; font-weight: 800; padding: 5px 14px; border-radius: 899px; text-transform: uppercase; letter-spacing: 0.08em; z-index: 10; box-shadow: 0 4px 9px rgba(16, 185, 129, 0.3);">Most Popular</div> : null}
+                <div style={`font-size: 13px; font-weight: 800; color: ${plan.highlight && theme !== 'dark' ? 'rgba(255,255,255,0.6)' : 'var(--brand-text-muted)'}; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 11px;`}>{plan.name}</div>
+                <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 7px; flex-wrap: wrap;">
+                  <div style={`font-size: 30px; font-weight: 900; color: ${plan.highlight && theme !== 'dark' ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'}; letter-spacing: -0.05em;`}>{plan.price}</div>
+                  {plan.period ? <div style={`font-size: 13px; font-weight: 500; color: ${plan.highlight && theme !== 'dark' ? 'rgba(255,255,255,0.4)' : 'var(--brand-text-muted)'};`}>{plan.period}</div> : null}
+                </div>
+                <div style={`font-size: 14px; color: ${plan.highlight && theme !== 'dark' ? 'rgba(255,255,255,0.5)' : 'var(--brand-text-muted)'}; margin-bottom: 29px; line-height: 1.5; font-weight: 450;`}>{plan.desc}</div>
+                <div style="height: 1px; background: var(--brand-border); width: 100%; margin-bottom: 29px; opacity: 0.5;"></div>
+                <div style="display: flex; flex-direction: column; gap: 13px; margin-bottom: 36px;">
+                  {plan.features.map((feature: string) => (
+                    <div key={feature} style="display: flex; align-items: center; gap: 11px;">
+                      <div style="width: 16px; height: 16px; border-radius: 50%; background: rgba(16, 185, 129, 0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <span style="font-size: 9px; color: var(--brand-green); font-weight: 900;">✓</span>
+                      </div>
+                      <span style={`font-size: 13px; color: ${plan.highlight && theme !== 'dark' ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'}; font-weight: 450;`}>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                <button onclick={() => openWaitlist()} class="btn btn-ghost" style="width: 100%; border-radius: 899px;">{plan.name === 'Free' ? 'Get Started' : 'Join Waitlist'}</button>
+              </div>
+            ))}
+          </div>
+
+          {/* Enterprise tier */}
+          <div style={`max-width: 810px; margin: 0 auto; background: var(--brand-bg-surface); border: 1.8px solid var(--brand-border); border-radius: 18px; padding: 22px 29px; display: flex; align-items: center; justify-content: space-between; gap: 29px;`}>
+            <div>
+              <div style="font-size: 12px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">Enterprise</div>
+              <div style="font-size: 13px; color: var(--brand-text-body); max-width: 450px; line-height: 1.5;">Remove all limits. Dedicated infrastructure, custom volume pricing, SLA guarantees, and 24/7 VIP support for massive deployments.</div>
+            </div>
+            <button onclick={() => openWaitlist()} style={`white-space: nowrap; padding: 11px 29px; border-radius: 899px; border: 1.4px solid var(--brand-border); background: transparent; color: var(--brand-text-primary); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s;`} onmouseover={(e: any) => e.currentTarget.style.background = 'var(--brand-bg-subtle)'} onmouseout={(e: any) => e.currentTarget.style.background = 'transparent'}>Contact Sales</button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+}

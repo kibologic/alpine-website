@@ -1,0 +1,49 @@
+import { SwissComponent } from '@kibologic/core';
+
+export class Testimonials extends SwissComponent {
+  render() {
+    return (
+      <section class="section-padding" style="background: var(--brand-bg-page);">
+        <div class="container">
+          <div style="text-align: center; margin-bottom: 72px;">
+            <span style="display: inline-block; font-size: 11px; font-weight: 800; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 14px;">Social Proof</span>
+            <h2 style="font-size: clamp(29px, 5vw, 43px); font-weight: 800; color: var(--brand-navy); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 18px;">Trusted by high-performance retailers</h2>
+          </div>
+
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px;">
+            {[
+              {
+                quote: "Alpine transformed how we handle our 15 branches. The offline POS is a life-saver in areas with spotty connectivity.",
+                author: "Sarah Phiri",
+                role: "Operations Director, Freshmart"
+              },
+              {
+                quote: "The real-time inventory sync is incredible. We finally have a single source of truth for all our stock across the country.",
+                author: "James Banda",
+                role: "CEO, Banda Retail Group"
+              },
+              {
+                quote: "Developer-friendly APIs allowed us to connect Alpine to our custom accounting system in less than a week.",
+                author: "Chen Chi",
+                role: "CTO, Chi Logistics"
+              }
+            ].map(t => (
+              <div key={t.author} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 18px; padding: 32px; display: flex; flex-direction: column; gap: 22px;">
+                <p style="font-size: 15px; color: var(--brand-text-body); line-height: 1.7; font-style: italic;">"{t.quote}"</p>
+                <div style="display: flex; align-items: center; gap: 11px;">
+                  <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--brand-bg-subtle); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--brand-green); font-size: 12px; border: 1px solid var(--brand-border);">
+                    {t.author.charAt(0)}
+                  </div>
+                  <div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--brand-navy);">{t.author}</div>
+                    <div style="font-size: 11px; color: var(--brand-text-muted); font-weight: 500;">{t.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+}

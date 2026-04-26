@@ -1,0 +1,185 @@
+/* Alpine ERP Design System - Tabeet Inspired Refinement */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap');
+
+:root {
+  /* Font Families */
+  --brand-font-heading: 'Plus Jakarta Sans', sans-serif;
+  --brand-font-body: 'Inter', sans-serif;
+
+  /* Official Alpine ERP Scale */
+  --color-snow-50:  #FAFCFF;
+  --color-snow-100: #F4F7FB;
+  --color-snow-200: #E8EFF7;
+  --color-snow-300: #D6E2EF;
+  --color-snow-400: #B8CEDE;
+  
+  --color-slate-500: #7A8499;
+  --color-slate-700: #3D4559;
+  --color-slate-900: #1A2035;
+  
+  --color-alpine-400: #4A9E58;
+  --color-alpine-500: #2D7A3A;
+  --color-alpine-600: #1D5C28;
+
+  --brand-green: var(--color-alpine-500);
+  --brand-green-light: var(--color-alpine-400);
+  --brand-accent: #10b981;
+}
+
+html { scroll-behavior: smooth; transition: background-color 0.3s ease; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--brand-font-body);
+  background: var(--brand-bg-page);
+  color: var(--brand-text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--brand-font-heading);
+}
+
+/* LIGHT THEME */
+[data-theme="light"], :root:not([data-theme="dark"]) {
+  --brand-navy: var(--color-slate-900);
+  --brand-navy-dark: #080a11;
+  --brand-border: var(--color-snow-300);
+  --brand-bg-page: #f9fafb; /* Off-white background from Tabeet */
+  --brand-bg-subtle: var(--color-snow-100);
+  --brand-bg-surface: #ffffff;
+  --brand-bg-inverse: var(--color-slate-900);
+  --brand-text-primary: var(--color-slate-900);
+  --brand-text-body: var(--color-slate-700);
+  --brand-text-muted: var(--color-slate-500);
+  --brand-text-inverse: #ffffff;
+  --brand-shadow: 0 9px 36px rgba(0,0,0,0.08);
+  --brand-shadow-sm: 0 4px 11px rgba(0,0,0,0.03);
+
+  /* Mockup Tokens */
+  --mockup-sb-bg: var(--color-slate-900);
+  --mockup-sb-text: rgba(255,255,255,0.6);
+  --mockup-sb-active: rgba(255,255,255,0.1);
+}
+
+/* DARK THEME */
+[data-theme="dark"] {
+  --brand-navy: #ffffff;
+  --brand-navy-dark: #050609;
+  --brand-border: rgba(255,255,255,0.1);
+  --brand-bg-page: #090909;
+  --brand-bg-subtle: #101010;
+  --brand-bg-surface: #141414;
+  --brand-bg-inverse: #ffffff;
+  --brand-text-primary: #f8f9fa;
+  --brand-text-body: #d1d5db;
+  --brand-text-muted: #9ca3af;
+  --brand-text-inverse: #090909;
+  --brand-shadow: 0 18px 54px rgba(0,0,0,0.5);
+  --brand-shadow-sm: 0 4px 11px rgba(0,0,0,0.2);
+
+  /* Mockup Tokens */
+  --mockup-sb-bg: #050609;
+  --mockup-sb-text: rgba(255,255,255,0.4);
+  --mockup-sb-active: rgba(255,255,255,0.06);
+}
+
+/* Layout Utilities */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 29px;
+}
+
+.section-padding {
+  padding: 108px 0;
+}
+
+.grid { display: grid; gap: 29px; }
+.two-col { grid-template-columns: repeat(2, 1fr); align-items: center; }
+
+@media (max-width: 774px) {
+  .two-col { grid-template-columns: 1fr; gap: 43px; }
+  .section-padding { padding: 72px 0; }
+}
+
+.desktop-only { display: flex; }
+.mobile-only { display: none; }
+@media (max-width: 774px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+}
+
+/* Alpine website specific helpers */
+.alp-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--brand-green);
+  display: block;
+}
+.alp-icon-badge {
+  width: 47px;
+  height: 47px;
+  border-radius: 13px;
+  border: 1px solid var(--brand-border);
+  background: var(--brand-bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.alp-icon-badge svg {
+  width: 22px;
+  height: 22px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 25px;
+  border-radius: 899px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: none;
+  font-family: var(--brand-font-body);
+}
+
+.btn-primary {
+  background: var(--brand-green);
+  color: #fff;
+  box-shadow: 0 4px 13px rgba(45, 122, 58, 0.3);
+}
+.btn-primary:hover {
+  background: var(--brand-green-light);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 18px rgba(45, 122, 58, 0.4);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--brand-text-primary);
+  border: 1px solid var(--brand-border);
+}
+.btn-ghost:hover {
+  background: var(--brand-bg-subtle);
+  border-color: var(--brand-green);
+}
+
+.btn-dark {
+  background: var(--brand-bg-inverse);
+  color: var(--brand-text-inverse);
+}
+
+.alp-mock-shell { height: 468px; }
+@media (max-width: 774px) {
+  .alp-mock-shell { height: 378px; }
+}

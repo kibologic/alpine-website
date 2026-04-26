@@ -1,0 +1,43 @@
+import { SwissComponent } from '@kibologic/core';
+
+export class ProblemSolution extends SwissComponent {
+  render() {
+    return (
+      <section class="section-padding" style="background: var(--brand-bg-surface);">
+        <div class="container">
+          <div style="text-align: center; margin-bottom: 72px;">
+            <span style="display: inline-block; font-size: 11px; font-weight: 800; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 14px;">The Process</span>
+            <h2 style="font-size: clamp(29px, 5vw, 43px); font-weight: 800; color: var(--brand-navy); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 18px;">Stop fighting with patchwork tools</h2>
+            <p style="font-size: 17px; color: var(--brand-text-body); max-width: 512px; margin: 0 auto; line-height: 1.6;">Disconnected tills and manual inventory are costing you growth. Alpine unifies your operation in three quick steps.</p>
+          </div>
+
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 43px;">
+            {[
+              { 
+                step: '01', 
+                title: 'Create your Workspace', 
+                desc: 'Sign up in seconds and define your branches, tax rules, and user permissions from a central dashboard.' 
+              },
+              { 
+                step: '02', 
+                title: 'Initialize Inventory', 
+                desc: 'Import your product catalog via CSV or REST API. Alpine automatically distributes stock data to all terminals.' 
+              },
+              { 
+                step: '03', 
+                title: 'Start Selling', 
+                desc: 'Bind your POS devices and start taking orders. Even if the internet drops, your business keeps moving.' 
+              }
+            ].map(item => (
+              <div key={item.step} style="display: flex; flex-direction: column; gap: 18px;">
+                <div style="font-size: 43px; font-weight: 800; color: var(--brand-green); opacity: 0.15; line-height: 1; font-family: var(--brand-font-heading);">{item.step}</div>
+                <h3 style="font-size: 18px; font-weight: 800; color: var(--brand-navy); letter-spacing: -0.01em;">{item.title}</h3>
+                <p style="font-size: 14px; color: var(--brand-text-body); line-height: 1.6;">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+}
