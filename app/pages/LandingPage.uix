@@ -13,6 +13,8 @@ component LandingPage {
   state { let activeSection: string = ''; }
   state { let theme: 'light' | 'dark' = 'light'; }
   state { let _observer: any = null; }
+  state { let _starsRaf: any = null; }
+  state { let _stars: any[] = []; }
 
   mounted() {
     // Determine initial theme
@@ -176,10 +178,74 @@ component LandingPage {
       const el = document.getElementById(id);
       if (el) this._observer.observe(el);
     });
+
+    // Initialize Hero Starfield
+    setTimeout(() => this.initStars(), 100);
   }
 
   unmounted() {
     this._observer?.disconnect();
+    if (this._starsRaf) cancelAnimationFrame(this._starsRaf);
+    window.removeEventListener('resize', this._handleStarsResize);
+  }
+
+  _handleStarsResize: any = null;
+
+  initStars() {
+    const canvas = document.getElementById('hero-stars') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const resize = () => {
+      const parent = canvas.parentElement;
+      if (parent) {
+        canvas.width = parent.offsetWidth;
+        canvas.height = parent.offsetHeight;
+      }
+    };
+
+    this._handleStarsResize = resize;
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Adaptive particle count based on screen width
+    const particleCount = window.innerWidth < 860 ? 60 : 180;
+    this._stars = Array.from({ length: particleCount }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      z: Math.random() * 1.5 + 0.2, // Speed/Depth factor
+      o: Math.random() * 0.5 + 0.1  // Initial opacity
+    }));
+
+    const draw = () => {
+      if (!ctx || !canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const isDark = this.theme === 'dark';
+      const starColor = isDark ? '255, 255, 255' : '100, 116, 139'; // White in dark, Slate-500 in light
+
+      for (let s of this._stars) {
+        // Move stars horizontally (slow drift)
+        s.x += (s.z * 0.4);
+        if (s.x > canvas.width) {
+          s.x = 0;
+          s.y = Math.random() * canvas.height;
+        }
+
+        // Pulse opacity slightly for "twinkle"
+        const opacity = s.o * (isDark ? 1 : 0.6);
+        ctx.fillStyle = `rgba(${starColor}, ${opacity})`;
+        
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.z * 1.1, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      this._starsRaf = requestAnimationFrame(draw);
+    };
+
+    draw();
   }
 
   openWaitlist() {
@@ -461,6 +527,9 @@ component LandingPage {
         {/* ── HERO ── */}
         <section style="padding: 120px 32px 64px; text-align: center; max-width: 1200px; margin: 0 auto; position: relative; overflow: hidden;">
           
+          {/* Canvas Starfield Background */}
+          <canvas id="hero-stars" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; opacity: 0.8;"></canvas>
+
           {/* Background Gradient Glow */}
           <div style="position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 800px; height: 400px; background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%); z-index: -1; pointer-events: none;"></div>
 
@@ -600,9 +669,6 @@ component LandingPage {
 
               </div>
             </div>
-
-              </div>
-            </div>
           </div>
         </div>
 
@@ -717,8 +783,6 @@ component LandingPage {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
 
             {/* Custom stretched short card for ENTERPRISE */}
             <div style={`max-width: 900px; margin: 0 auto; background: var(--brand-bg-surface); border: 2px solid var(--brand-border); border-radius: 20px; padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; gap: 32px;`}>
@@ -733,7 +797,6 @@ component LandingPage {
                 onmouseout={(e: any) => e.currentTarget.style.background = 'transparent'}
               >Contact Sales</button>
             </div>
-
           </div>
         </section>
 
