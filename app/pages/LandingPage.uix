@@ -203,7 +203,7 @@ component LandingPage {
         const dpr = window.devicePixelRatio || 1;
         canvas.width = parent.offsetWidth * dpr;
         canvas.height = parent.offsetHeight * dpr;
-        ctx.scale(dpr, dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // Correctly handle scale
         canvas.style.width = parent.offsetWidth + 'px';
         canvas.style.height = parent.offsetHeight + 'px';
       }
@@ -424,7 +424,7 @@ component LandingPage {
 
             {/* Center links (Desktop-only) */}
             <div class="desktop-only" style="align-items: center; gap: 36px;">
-              {[['Architecture', '/features', 'features'], ['Releases', '/pricing', 'pricing'], ['Services', '/integrations', 'integrations'], ['Repos', '/about', 'about']].map(([label, href, id]: [string, string, string]) => (
+              {[['Features', '/features', 'features'], ['Pricing', '/pricing', 'pricing'], ['Integrations', '/integrations', 'integrations'], ['About', '/about', 'about']].map(([label, href, id]: [string, string, string]) => (
                 <a key={label} href={href}
                   style={`font-size: 14px; font-weight: ${this.activeSection === id ? '700' : '500'}; color: ${this.activeSection === id ? 'var(--brand-text-primary)' : 'var(--brand-text-muted)'}; text-decoration: none; transition: color 0.15s; padding-bottom: 2px; border-bottom: ${this.activeSection === id ? '2px solid var(--brand-green)' : '2px solid transparent'};`}
                   onmouseover={(e: any) => { e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
@@ -455,13 +455,9 @@ component LandingPage {
               </button>
 
               <div class="desktop-only" style="align-items: center; gap: 12px; margin-left: 4px;">
-                <a href="#" style="font-size: 14px; font-weight: 500; color: var(--brand-text-muted); text-decoration: none; padding: 8px 16px; border-radius: 999px; transition: background 0.15s;"
-                  onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
-                  onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; }}
-                >Log in</a>
                 <button
                   onclick={() => this.openWaitlist()}
-                  style={`font-size: 14px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); border: none; padding: 9px 20px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;`}
+                  style={`font-size: 14px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); border: none; padding: 10px 24px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;`}
                   onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
                   onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
                 >Join Waitlist</button>
@@ -521,9 +517,9 @@ component LandingPage {
                   style="width: 100%; padding: 16px; border-radius: 12px; background: var(--brand-bg-inverse); color: var(--brand-text-inverse); border: none; font-size: 16px; font-weight: 700; cursor: pointer;"
                 >Local Dev Notes</button>
                 <button
-                  onclick={() => this.toggleMobileMenu()}
-                  style="width: 100%; padding: 16px; border-radius: 12px; background: var(--brand-bg-subtle); color: var(--brand-text-primary); border: 1px solid var(--brand-border); font-size: 16px; font-weight: 600; cursor: pointer;"
-                >Log in</button>
+                  onclick={() => { this.toggleMobileMenu(); this.openWaitlist(); }}
+                  style="width: 100%; padding: 16px; border-radius: 12px; background: var(--brand-bg-inverse); color: var(--brand-text-inverse); border: none; font-size: 16px; font-weight: 700; cursor: pointer;"
+                >Get Access</button>
               </div>
             </div>
           </div>
@@ -706,12 +702,12 @@ component LandingPage {
 
           <div class="grid-3-to-1">
             {[
-              { icon: 'pos', title: 'Point of Sale', desc: 'Fast, reliable POS terminal that works offline. Built for high-volume retail environments with multi-till support.' },
-              { icon: 'inventory', title: 'Inventory Management', desc: 'Track stock across multiple outlets in real-time. Set reorder levels, run stock counts, and import from Excel.' },
-              { icon: 'reports', title: 'Analytics & Reports', desc: 'Live dashboards and customisable reports. Understand your sales, margins, and top performers at a glance.' },
-              { icon: 'team', title: 'Team Management', desc: 'Invite staff, assign roles, and control permissions granularly. Full audit log for every action taken.' },
-              { icon: 'integrations', title: 'Integrations', desc: 'Connect to your existing tools — accounting software, payment gateways, fiscal compliance systems and more.' },
-              { icon: 'multi', title: 'Multi-Outlet', desc: 'One account, multiple locations. Switch between outlets, consolidate reports, and manage stock transfers centrally.' },
+              { icon: 'pos', title: 'Point of Sale', desc: 'Fast, reliable POS terminal that works offline. Built for high-volume retail environments.' },
+              { icon: 'inventory', title: 'Inventory Management', desc: 'Track stock across multiple outlets in real-time. Set reorder levels and run counts.' },
+              { icon: 'reports', title: 'Analytics & Reports', desc: 'Live dashboards and customisable reports. Understand your sales and margins at a glance.' },
+              { icon: 'team', title: 'Team Management', desc: 'Invite staff, assign roles, and control permissions. Full audit log for every action.' },
+              { icon: 'integrations', title: 'Integrations', desc: 'Connect to accounting, payment gateways, fiscal systems and more.' },
+              { icon: 'multi', title: 'Multi-Outlet', desc: 'One account, multiple locations. Switch between outlets and manage stock centrally.' },
             ].map((f: any) => (
               <div key={f.title} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 20px; padding: 36px; transition: all 0.3s ease; box-shadow: var(--brand-shadow-sm);"
                 onmouseover={(e: any) => { e.currentTarget.style.boxShadow = 'var(--brand-shadow)'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--brand-green)'; }}
@@ -815,9 +811,9 @@ component LandingPage {
  
           <div class="grid-4-to-2-to-1" style="display: grid; gap: 16px; margin-bottom: 48px;">
             {[
-              { name: 'Payments', items: ['Visa/Mastercard', 'Mobile Money', 'Bank Transfer', 'Cash Drawer'] },
-              { name: 'Accounting', items: ['QuickBooks', 'Sage', 'Xero', 'Wave (coming soon)'] },
-              { name: 'Fiscal', items: ['ZIMRA e-Invoice', 'KRA eTIMS', 'ZRAU Fiscalisation', 'NUST Custom'] },
+              { name: 'Payments', items: ['Visa/Mastercard', 'PayChangu', 'One Khusa', 'Mobile Money', 'Cash Drawer'] },
+              { name: 'Accounting', items: ['QuickBooks', 'Sage', 'Xero', 'Alpine Accounting (coming soon)'] },
+              { name: 'Fiscal', items: ['Malawi MRA EFDs', 'ZIMRA e-Invoice', 'KRA eTIMS', 'ZRAU Fiscalisation'] },
               { name: 'Operations', items: ['Supplier EDI', 'Excel / CSV', 'REST API', 'Webhooks'] },
             ].map((cat: any) => (
               <div key={cat.name} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 16px; padding: 24px;">
@@ -889,10 +885,12 @@ component LandingPage {
         <footer style="background: var(--brand-navy-dark); border-top: 1px solid rgba(255,255,255,0.06); padding: 32px;">
           <div style="max-width: 1160px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 24px; height: 24px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                <span style="color: var(--brand-navy-dark); font-size: 11px; font-weight: 800;">A</span>
-              </div>
-              <span style="font-size: 14px; font-weight: 700; color: #fff;">Alpine</span>
+              <a href="https://harmonious-dream-production-60cf.up.railway.app/" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
+                <div style="width: 24px; height: 24px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: var(--brand-navy-dark); font-size: 11px; font-weight: 800;">A</span>
+                </div>
+                <span style="font-size: 14px; font-weight: 700; color: #fff;">Alpine</span>
+              </a>
               <span style="font-size: 12px; color: #9ca3af; margin-left: 8px;">by Kibologic</span>
             </div>
 
