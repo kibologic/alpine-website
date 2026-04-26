@@ -36,9 +36,9 @@ component LandingPage {
           .mobile-only { display: flex !important; }
         }
 
-        .grid-3-to-1 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .grid-3-to-1 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
         .grid-2-to-1 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 80px; }
-        .grid-4-to-2-to-1 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .grid-4-to-2-to-1 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
         @media (max-width: 1024px) {
           .grid-4-to-2-to-1 { grid-template-columns: repeat(2, 1fr); }
         }
@@ -49,23 +49,24 @@ component LandingPage {
 
         /* Alpine website specific helpers */
         .alp-icon {
-          width: 22px;
-          height: 22px;
+          width: 24px;
+          height: 24px;
           color: var(--brand-green);
           display: block;
         }
         .alp-icon-badge {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
+          width: 52px;
+          height: 52px;
+          border-radius: 14px;
           border: 1px solid var(--brand-border);
           background: var(--brand-bg-subtle);
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 14px;
+          margin-bottom: 20px;
+          transition: transform 0.2s ease, background 0.2s ease;
         }
-        .alp-icon-badge svg { width: 22px; height: 22px; }
+        .alp-icon-badge svg { width: 24px; height: 24px; }
 
         .alp-mock-shell { height: 520px; }
         @media (max-width: 860px) {
@@ -93,6 +94,7 @@ component LandingPage {
 
           --brand-green: var(--color-alpine-500);
           --brand-green-light: var(--color-alpine-400);
+          --brand-accent: #10b981;
         }
 
         /* LIGHT THEME */
@@ -108,7 +110,8 @@ component LandingPage {
           --brand-text-body: var(--color-slate-700);
           --brand-text-muted: var(--color-slate-500);
           --brand-text-inverse: #ffffff;
-          --brand-shadow: 0 4px 24px rgba(0,0,0,0.06);
+          --brand-shadow: 0 10px 40px rgba(0,0,0,0.08);
+          --brand-shadow-sm: 0 4px 12px rgba(0,0,0,0.03);
 
           /* Mockup Tokens */
           --mockup-sb-bg: var(--color-slate-900);
@@ -129,12 +132,24 @@ component LandingPage {
           --brand-text-body: #d1d5db;
           --brand-text-muted: #9ca3af;
           --brand-text-inverse: #0a0a0a;
-          --brand-shadow: 0 4px 24px rgba(0,0,0,0.4);
+          --brand-shadow: 0 20px 60px rgba(0,0,0,0.5);
+          --brand-shadow-sm: 0 4px 12px rgba(0,0,0,0.2);
 
           /* Mockup Tokens */
           --mockup-sb-bg: #05070a;
           --mockup-sb-text: rgba(255,255,255,0.4);
           --mockup-sb-active: rgba(255,255,255,0.06);
+        }
+
+        .btn-primary {
+          background: var(--brand-green);
+          color: #fff;
+          box-shadow: 0 4px 14px rgba(45, 122, 58, 0.3);
+        }
+        .btn-primary:hover {
+          background: var(--brand-green-light);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(45, 122, 58, 0.4);
         }
       `;
       document.head.appendChild(s);
@@ -329,11 +344,11 @@ component LandingPage {
           <div style="max-width: 1160px; margin: 0 auto; padding: 0 32px; height: 68px; display: flex; align-items: center; justify-content: space-between;">
 
             {/* Logo */}
-            <a href="/" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
-              <div style="width: 28px; height: 28px; background: var(--brand-navy); border-radius: 7px; display: flex; align-items: center; justify-content: center;">
-                <span style="color: #fff; font-size: 13px; font-weight: 800; letter-spacing: -0.5px;">A</span>
+            <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; transition: opacity 0.2s;" onmouseover={(e: any) => e.currentTarget.style.opacity = '0.8'} onmouseout={(e: any) => e.currentTarget.style.opacity = '1'}>
+              <div style="width: 32px; height: 32px; background: var(--brand-green); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);">
+                <span style="color: #fff; font-size: 16px; font-weight: 900; letter-spacing: -1px;">A</span>
               </div>
-              <span style="font-size: 16px; font-weight: 700; color: var(--brand-navy); letter-spacing: -0.3px;">Alpine</span>
+              <span style="font-size: 19px; font-weight: 850; color: var(--brand-navy); letter-spacing: -0.04em;">Alpine</span>
             </a>
 
             {/* Center links (Desktop-only) */}
@@ -444,39 +459,40 @@ component LandingPage {
         ) : null}
 
         {/* ── HERO ── */}
-        <section style="padding: 88px 32px 0; text-align: center; max-width: 1160px; margin: 0 auto;">
+        <section style="padding: 120px 32px 64px; text-align: center; max-width: 1200px; margin: 0 auto; position: relative; overflow: hidden;">
+          
+          {/* Background Gradient Glow */}
+          <div style="position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 800px; height: 400px; background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%); z-index: -1; pointer-events: none;"></div>
 
           {/* Announcement badge */}
-          <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--brand-bg-subtle); border: 1px solid var(--brand-border); border-radius: 999px; padding: 5px 14px 5px 6px; margin-bottom: 36px;">
-            <span style="background: var(--brand-bg-inverse); color: var(--brand-text-inverse); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase;">New</span>
-            <span style="font-size: 13px; font-weight: 500; color: var(--brand-text-body);">Offline-ready POS + inventory with audit-ready reporting</span>
+          <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--brand-bg-subtle); border: 1px solid var(--brand-border); border-radius: 999px; padding: 5px 14px 5px 6px; margin-bottom: 48px; box-shadow: var(--brand-shadow-sm);">
+            <span style="background: var(--brand-green); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase;">New</span>
+            <span style="font-size: 13px; font-weight: 600; color: var(--brand-text-body);">Run retail with clarity — Offline-ready POS is here</span>
           </div>
 
           {/* Headline */}
-          <h1 style="font-size: clamp(40px, 6vw, 64px); font-weight: 800; color: var(--brand-navy); line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 24px; max-width: 760px; margin-left: auto; margin-right: auto;">
-            Alpine ERP<br />
-            The software that runs your business
+          <h1 style="font-size: clamp(48px, 8vw, 82px); font-weight: 900; color: var(--brand-navy); line-height: 0.95; letter-spacing: -0.04em; margin-bottom: 28px; max-width: 960px; margin-left: auto; margin-right: auto;">
+            The OS for<br />
+            modern African retail.
           </h1>
 
           {/* Subheadline */}
-          <p style="font-size: 18px; font-weight: 400; color: var(--brand-text-muted); line-height: 1.65; max-width: 640px; margin: 0 auto 40px; letter-spacing: -0.01em;">
-            Alpine helps retail and trade businesses run inventory, point of sale, purchasing, and reporting with clear controls and an audit-ready trail.
-            Join the waitlist to get early access when your category opens.
+          <p style="font-size: 20px; font-weight: 450; color: var(--brand-text-muted); line-height: 1.6; max-width: 680px; margin: 0 auto 48px; letter-spacing: -0.01em;">
+            Alpine unifies Point of Sale, inventory, and team management into a single, high-reliability platform built for the unique demands of regional trade.
           </p>
 
           {/* CTAs */}
-          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 64px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 80px; flex-wrap: wrap;">
             <button
               onclick={() => this.openWaitlist()}
-              style="font-size: 15px; font-weight: 600; color: #fff; background: var(--brand-navy); border: none; padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: opacity 0.15s;"
-              onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
-              onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
+              class="btn-primary"
+              style="font-size: 16px; font-weight: 700; padding: 16px 36px; border-radius: 999px; cursor: pointer; border: none; transition: all 0.2s ease;"
             >Join the waitlist</button>
             <button
-              style="font-size: 15px; font-weight: 500; color: var(--brand-text-body); background: var(--brand-bg-subtle); border: 1px solid var(--brand-border); padding: 14px 28px; border-radius: 999px; cursor: pointer; transition: background 0.15s;"
-              onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--color-snow-200)'; }}
-              onmouseout={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
-            >See the product →</button>
+              style="font-size: 16px; font-weight: 600; color: var(--brand-text-primary); background: var(--brand-bg-surface); border: 1px solid var(--brand-border); padding: 16px 36px; border-radius: 999px; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--brand-shadow-sm);"
+              onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
+              onmouseout={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-surface)'; }}
+            >Explore Features →</button>
           </div>
         </section>
 
@@ -499,13 +515,13 @@ component LandingPage {
             <div class="alp-mock-shell" style="display: flex; background: var(--brand-bg-page);">
 
               {/* Sidebar */}
-              <div style="width: 200px; flex-shrink: 0; background: var(--mockup-sb-bg); border-right: 1px solid rgba(255,255,255,0.08); padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; transition: background 0.3s ease;">
+              <div style="width: 200px; flex-shrink: 0; background: var(--mockup-sb-bg); border-right: 1px solid rgba(255,255,255,0.08); padding: 24px 16px; display: flex; flex-direction: column; gap: 6px; transition: background 0.3s ease;">
                 {/* Logo in sidebar */}
-                <div style="display: flex; align-items: center; gap: 8px; padding: 8px; margin-bottom: 12px;">
-                  <div style="width: 24px; height: 24px; background: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                    <span style="color: var(--mockup-sb-bg); font-size: 11px; font-weight: 800; transition: color 0.3s ease;">A</span>
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px; margin-bottom: 20px;">
+                  <div style="width: 26px; height: 26px; background: var(--brand-green); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                    <span style="color: #fff; font-size: 13px; font-weight: 900; letter-spacing: -1px;">A</span>
                   </div>
-                  <span style="font-size: 13px; font-weight: 700; color: #fff;">Alpine</span>
+                  <span style="font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -0.02em;">Alpine</span>
                 </div>
  
                 {/* Nav items */}
@@ -517,114 +533,73 @@ component LandingPage {
                   { icon: '◫', label: 'Reports', active: false },
                   { icon: '◈', label: 'Settings', active: false },
                 ].map((item: any) => (
-                  <div key={item.label} style={`display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; background: ${item.active ? 'var(--mockup-sb-active)' : 'transparent'};`}>
-                    <span style={`font-size: 14px; color: ${item.active ? '#fff' : 'var(--mockup-sb-text)'};`}>{item.icon}</span>
-                    <span style={`font-size: 12px; font-weight: ${item.active ? '600' : '400'}; color: ${item.active ? '#fff' : 'var(--mockup-sb-text)'};`}>{item.label}</span>
+                  <div key={item.label} style={`display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; background: ${item.active ? 'var(--mockup-sb-active)' : 'transparent'}; transition: all 0.2s ease;`}>
+                    <span style={`font-size: 15px; color: ${item.active ? 'var(--brand-green)' : 'var(--mockup-sb-text)'};`}>{item.icon}</span>
+                    <span style={`font-size: 13px; font-weight: ${item.active ? '600' : '450'}; color: ${item.active ? '#fff' : 'var(--mockup-sb-text)'};`}>{item.label}</span>
                   </div>
                 ))}
               </div>
 
               {/* Main content */}
-              <div style="flex: 1; overflow: hidden; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+              <div style="flex: 1; overflow: hidden; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
 
                 {/* Top bar */}
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                   <div>
-                    <div style="font-size: 16px; font-weight: 700; color: var(--brand-navy);">Dashboard</div>
-                    <div style="font-size: 11px; color: var(--brand-text-muted); margin-top: 1px;">Sunday, 12 April 2026</div>
+                    <div style="font-size: 18px; font-weight: 800; color: var(--brand-navy); letter-spacing: -0.02em;">Analytics Overview</div>
+                    <div style="font-size: 12px; color: var(--brand-text-muted); margin-top: 2px; font-weight: 500;">Live data from all 12 outlets</div>
                   </div>
-                  <div style="display: flex; gap: 8px; align-items: center;">
-                    <div style="background: var(--brand-bg-subtle); border-radius: 6px; padding: 6px 12px; font-size: 11px; color: var(--brand-text-body); cursor: pointer;">Main Outlet ▾</div>
-                    <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--brand-navy); display: flex; align-items: center; justify-content: center;">
-                      <span style="font-size: 11px; color: #fff; font-weight: 600;">SB</span>
+                  <div style="display: flex; gap: 10px; align-items: center;">
+                    <div style="background: var(--brand-bg-subtle); border: 1.5px solid var(--brand-border); border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--brand-text-body); cursor: pointer;">All Outlets ▾</div>
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--brand-navy); display: flex; align-items: center; justify-content: center; box-shadow: var(--brand-shadow-sm);">
+                      <span style="font-size: 13px; color: #fff; font-weight: 700;">SB</span>
                     </div>
                   </div>
                 </div>
 
                 {/* KPI Cards */}
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
                   {[
                     { label: 'Revenue', value: 'K 284,310', delta: '+12.4%', up: true },
                     { label: 'Orders', value: '1,847', delta: '+8.1%', up: true },
                     { label: 'Avg. Basket', value: 'K 154', delta: '-2.3%', up: false },
-                    { label: 'Active SKUs', value: '4,291', delta: '+0.6%', up: true },
+                    { label: 'Stock Value', value: 'K 1.2M', delta: '+4.2%', up: true },
                   ].map((kpi: any) => (
-                    <div key={kpi.label} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 10px; padding: 14px;">
-                      <div style="font-size: 10px; font-weight: 600; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">{kpi.label}</div>
-                      <div style="font-size: 18px; font-weight: 700; color: var(--brand-text-primary); letter-spacing: -0.03em;">{kpi.value}</div>
-                      <div style={`font-size: 10px; font-weight: 600; margin-top: 4px; color: ${kpi.up ? 'var(--brand-green)' : '#dc2626'};`}>{kpi.delta} vs last month</div>
+                    <div key={kpi.label} style="background: var(--brand-bg-surface); border: 1.5px solid var(--brand-border); border-radius: 14px; padding: 20px; box-shadow: var(--brand-shadow-sm);">
+                      <div style="font-size: 11px; font-weight: 750; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px;">{kpi.label}</div>
+                      <div style="font-size: 22px; font-weight: 900; color: var(--brand-text-primary); letter-spacing: -0.04em;">{kpi.value}</div>
+                      <div style={`font-size: 11px; font-weight: 700; margin-top: 6px; display: flex; align-items: center; gap: 4px; color: ${kpi.up ? 'var(--brand-green)' : '#ef4444'};`}>
+                        {kpi.up ? '↑' : '↓'} {kpi.delta}
+                      </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Chart + Activity row */}
-                <div style="display: grid; grid-template-columns: 1fr 280px; gap: 12px; flex: 1; min-height: 0;">
-
-                  {/* Chart */}
-                  <div style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                      <span style="font-size: 12px; font-weight: 600; color: var(--brand-text-primary);">Sales over time</span>
-                      <div style="display: flex; gap: 6px;">
-                        {['7d', '30d', '90d'].map((t: string, i: number) => (
-                          <span key={t} style={`font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; ${i === 1 ? 'background: var(--brand-text-primary); color: var(--brand-bg-surface); font-weight: 600;' : 'color: var(--brand-text-muted);'}`}>{t}</span>
+                {/* Chart Section */}
+                <div style="background: var(--brand-bg-surface); border: 1.5px solid var(--brand-border); border-radius: 14px; padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--brand-shadow-sm);">
+                   <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <span style="font-size: 14px; font-weight: 800; color: var(--brand-text-primary); letter-spacing: -0.01em;">Sales Velocity (Last 30 Days)</span>
+                      <div style="display: flex; gap: 8px; background: var(--brand-bg-subtle); padding: 4px; border-radius: 8px;">
+                        {['Daily', 'Weekly'].map((t: string, i: number) => (
+                          <span key={t} style={`font-size: 11px; padding: 4px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; ${i === 0 ? 'background: var(--brand-bg-surface); color: var(--brand-text-primary); font-weight: 700; box-shadow: var(--brand-shadow-sm);' : 'color: var(--brand-text-muted); font-weight: 500;'}`}>{t}</span>
                         ))}
                       </div>
                     </div>
 
-                    {/* SVG chart */}
-                    <svg viewBox="0 0 440 120" style="width: 100%; flex: 1;" preserveAspectRatio="none">
-                      {/* Grid lines */}
-                      <line x1="0" y1="30" x2="440" y2="30" stroke="#f0f0f0" stroke-width="1"/>
-                      <line x1="0" y1="60" x2="440" y2="60" stroke="#f0f0f0" stroke-width="1"/>
-                      <line x1="0" y1="90" x2="440" y2="90" stroke="#f0f0f0" stroke-width="1"/>
-
-                      {/* Area fill */}
+                    <svg viewBox="0 0 800 200" style="width: 100%; flex: 1;" preserveAspectRatio="none">
+                      <path d="M0,180 C100,170 200,80 300,100 C400,120 500,40 600,60 C700,80 800,20 800,20 L800,200 L0,200 Z" fill="url(#areaGradMock)"/>
+                      <path d="M0,180 C100,170 200,80 300,100 C400,120 500,40 600,60 C700,80 800,20 800,20" fill="none" stroke="var(--brand-green)" stroke-width="3" stroke-linecap="round"/>
                       <defs>
-                        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stop-color="#16a34a" stop-opacity="0.12"/>
-                          <stop offset="100%" stop-color="#16a34a" stop-opacity="0"/>
+                        <linearGradient id="areaGradMock" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stop-color="var(--brand-green)" stop-opacity="0.15"/>
+                          <stop offset="100%" stop-color="var(--brand-green)" stop-opacity="0"/>
                         </linearGradient>
                       </defs>
-                      <path d="M0,95 C30,90 55,65 88,60 C121,55 155,75 190,58 C225,41 255,20 295,28 C335,36 370,50 440,35 L440,120 L0,120 Z"
-                        fill="url(#areaGrad)"/>
-                      {/* Line */}
-                      <path d="M0,95 C30,90 55,65 88,60 C121,55 155,75 190,58 C225,41 255,20 295,28 C335,36 370,50 440,35"
-                        fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      {/* Data point */}
-                      <circle cx="295" cy="28" r="3.5" fill="#16a34a"/>
-                      <circle cx="295" cy="28" r="6" fill="#16a34a" fill-opacity="0.15"/>
                     </svg>
-
-                    {/* X labels */}
-                    <div style="display: flex; justify-content: space-between; padding: 0 4px;">
-                      {['Apr 1', 'Apr 5', 'Apr 8', 'Apr 11', 'Apr 14', 'Apr 17', 'Apr 20'].map((d: string) => (
-                        <span key={d} style="font-size: 9px; color: #d1d5db;">{d}</span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Activity feed */}
-                  <div style="background: #fff; border: 1px solid #f0f0f0; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px; overflow: hidden;">
-                    <span style="font-size: 12px; font-weight: 600; color: #0a0a0a;">Recent activity</span>
-                    {[
-                      { label: 'Sale #4821', sub: 'Main Outlet · K 3,200', dot: '#16a34a', time: '2m ago' },
-                      { label: 'Stock adjusted', sub: 'Rice 50kg ×120 units', dot: '#f59e0b', time: '14m ago' },
-                      { label: 'Sale #4820', sub: 'Branch 2 · K 1,850', dot: '#16a34a', time: '21m ago' },
-                      { label: 'New customer', sub: 'Tendai Moyo registered', dot: '#6366f1', time: '1h ago' },
-                      { label: 'Session closed', sub: 'Till 3 · K 94,200 float', dot: '#9ca3af', time: '2h ago' },
-                      { label: 'Sale #4819', sub: 'Main Outlet · K 5,600', dot: '#16a34a', time: '2h ago' },
-                    ].map((item: any) => (
-                      <div key={item.label} style="display: flex; align-items: center; gap: 10px;">
-                        <div style={`width: 6px; height: 6px; border-radius: 50%; background: ${item.dot}; flex-shrink: 0;`}></div>
-                        <div style="flex: 1; min-width: 0;">
-                          <div style="font-size: 11px; font-weight: 600; color: #0a0a0a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{item.label}</div>
-                          <div style="font-size: 10px; color: #9ca3af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{item.sub}</div>
-                        </div>
-                        <span style="font-size: 9px; color: #d1d5db; flex-shrink: 0;">{item.time}</span>
-                      </div>
-                    ))}
-                  </div>
                 </div>
+
+              </div>
+            </div>
 
               </div>
             </div>
@@ -632,9 +607,9 @@ component LandingPage {
         </div>
 
         {/* ── SOCIAL PROOF ── */}
-        <section style="padding: 64px 32px 80px; text-align: center;">
-          <p style="font-size: 12px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 28px;">Trusted by operators across Southern Africa</p>
-          <div style="display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap;">
+        <section style="padding: 80px 32px 100px; text-align: center; border-bottom: 1px solid var(--brand-border);">
+          <p style="font-size: 13px; font-weight: 750; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 40px;">Trusted by operators across Southern Africa</p>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 64px; flex-wrap: wrap; opacity: 0.6; filter: grayscale(1);">
             {[
               { name: 'Freshmart', weight: 800 },
               { name: 'UrbanGrocers', weight: 700 },
@@ -642,20 +617,23 @@ component LandingPage {
               { name: 'Nakumat+', weight: 900 },
               { name: 'ShopOne', weight: 700 }
             ].map((logo: any) => (
-              <span key={logo.name} style={`font-size: 16px; font-weight: ${logo.weight}; color: var(--brand-text-muted); opacity: 0.4; letter-spacing: -0.04em; filter: grayscale(1);`}>{logo.name}</span>
+              <div key={logo.name} style="display: flex; align-items: center; gap: 8px;">
+                 <div style="width: 24px; height: 24px; border: 1.5px solid var(--brand-text-muted); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900;">{logo.name[0]}</div>
+                 <span style={`font-size: 18px; font-weight: ${logo.weight}; color: var(--brand-text-muted); letter-spacing: -0.04em;`}>{logo.name}</span>
+              </div>
             ))}
           </div>
         </section>
 
         {/* ── FEATURES ── */}
-        <section id="features" style="padding: 96px 32px; max-width: 1160px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 64px;">
-            <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Features</span>
-            <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: var(--brand-text-primary); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Everything you need to run your business</h2>
-            <p style="font-size: 17px; color: var(--brand-text-muted); max-width: 520px; margin: 0 auto; line-height: 1.65;">Alpine brings POS, inventory, team management, and analytics into one unified platform — no patchwork of tools required.</p>
+        <section id="features" style="padding: 140px 32px; max-width: 1200px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 80px;">
+            <span style="display: inline-block; font-size: 13px; font-weight: 750; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Core Modules</span>
+            <h2 style="font-size: clamp(32px, 5vw, 54px); font-weight: 900; color: var(--brand-text-primary); line-height: 1.05; letter-spacing: -0.04em; margin-bottom: 20px;">Everything you need to run your business</h2>
+            <p style="font-size: 19px; color: var(--brand-text-muted); max-width: 580px; margin: 0 auto; line-height: 1.6; font-weight: 450;">Alpine brings POS, inventory, team management, and analytics into one unified platform — no patchwork of tools required.</p>
           </div>
 
-          <div class="grid-3-to-1" style="display: grid; gap: 24px;">
+          <div class="grid-3-to-1">
             {[
               { icon: 'pos', title: 'Point of Sale', desc: 'Fast, reliable POS terminal that works offline. Built for high-volume retail environments with multi-till support.' },
               { icon: 'inventory', title: 'Inventory Management', desc: 'Track stock across multiple outlets in real-time. Set reorder levels, run stock counts, and import from Excel.' },
@@ -664,28 +642,28 @@ component LandingPage {
               { icon: 'integrations', title: 'Integrations', desc: 'Connect to your existing tools — accounting software, payment gateways, fiscal compliance systems and more.' },
               { icon: 'multi', title: 'Multi-Outlet', desc: 'One account, multiple locations. Switch between outlets, consolidate reports, and manage stock transfers centrally.' },
             ].map((f: any) => (
-              <div key={f.title} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 16px; padding: 28px; transition: box-shadow 0.2s;"
-                onmouseover={(e: any) => { e.currentTarget.style.boxShadow = 'var(--brand-shadow)'; }}
-                onmouseout={(e: any) => { e.currentTarget.style.boxShadow = 'none'; }}
+              <div key={f.title} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 20px; padding: 36px; transition: all 0.3s ease; box-shadow: var(--brand-shadow-sm);"
+                onmouseover={(e: any) => { e.currentTarget.style.boxShadow = 'var(--brand-shadow)'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--brand-green)'; }}
+                onmouseout={(e: any) => { e.currentTarget.style.boxShadow = 'var(--brand-shadow-sm)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--brand-border)'; }}
               >
                 <div class="alp-icon-badge">{this.icon(f.icon)}</div>
-                <div style="font-size: 15px; font-weight: 700; color: var(--brand-text-primary); margin-bottom: 8px; letter-spacing: -0.01em;">{f.title}</div>
-                <div style="font-size: 13px; color: var(--brand-text-muted); line-height: 1.65;">{f.desc}</div>
+                <div style="font-size: 18px; font-weight: 800; color: var(--brand-text-primary); margin-bottom: 12px; letter-spacing: -0.02em;">{f.title}</div>
+                <div style="font-size: 15px; color: var(--brand-text-muted); line-height: 1.6; font-weight: 450;">{f.desc}</div>
               </div>
             ))}
           </div>
         </section>
 
         {/* ── PRICING ── */}
-        <section id="pricing" style="padding: 96px 32px; background: var(--brand-bg-subtle); border-top: 1px solid var(--brand-border); border-bottom: 1px solid var(--brand-border);">
-          <div style="max-width: 1160px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 64px;">
-              <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Pricing</span>
-              <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: var(--brand-text-primary); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px;">Simple, transparent pricing</h2>
-              <p style="font-size: 17px; color: var(--brand-text-muted); max-width: 480px; margin: 0 auto; line-height: 1.65;">No surprise fees. Pay per outlet, scale as you grow.</p>
+        <section id="pricing" style="padding: 140px 32px; background: var(--brand-bg-subtle); border-top: 1px solid var(--brand-border); border-bottom: 1px solid var(--brand-border);">
+          <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 80px;">
+              <span style="display: inline-block; font-size: 13px; font-weight: 750; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Pricing</span>
+              <h2 style="font-size: clamp(32px, 5vw, 54px); font-weight: 900; color: var(--brand-text-primary); line-height: 1.05; letter-spacing: -0.04em; margin-bottom: 20px;">Simple, transparent pricing</h2>
+              <p style="font-size: 19px; color: var(--brand-text-muted); max-width: 520px; margin: 0 auto; line-height: 1.6; font-weight: 450;">No surprise fees. Pay per outlet, scale as you grow.</p>
             </div>
 
-            <div class="grid-3-to-1" style="gap: 24px; max-width: 900px; margin: 0 auto 24px;">
+            <div class="grid-3-to-1" style="max-width: 1000px; margin: 0 auto 32px;">
               {[
                 { 
                   name: 'Free', price: 'Free', period: '', 
@@ -694,41 +672,53 @@ component LandingPage {
                   highlight: false, isDark: this.theme === 'dark' 
                 },
                 { 
-                  name: 'Pro', price: 'MWK 35,000', period: '/mo', 
+                  name: 'Pro', price: 'MWK 35k', period: '/mo', 
                   desc: 'For growing retail businesses operating at scale.', 
                   features: ['15 Users', '3,000 Inventory Units', '5 POS Registers', '5,000 Customers', '3 Outlet Locations', '5 Device Bindings', 'Priority support', 'Basic Analytics'], 
                   highlight: true, isDark: this.theme === 'dark' 
                 },
                 { 
-                  name: 'Premium', price: 'MWK 50,000', period: '/mo', 
+                  name: 'Premium', price: 'MWK 50k', period: '/mo', 
                   desc: 'For high-volume operations scaling across regions.', 
                   features: ['25 Users', '20,000 Inventory Units', '10 POS (+ add-ons)', '50,000 Customers', '15 Outlet Locations', '15 Device Bindings', 'Audit Logs', 'API Rate Limits'], 
                   highlight: false, isDark: this.theme === 'dark' 
                 },
               ].map((plan: any) => (
-                <div key={plan.name} style={`background: ${plan.highlight ? (plan.isDark ? 'var(--brand-bg-surface)' : 'var(--brand-bg-inverse)') : 'var(--brand-bg-surface)'}; border: 2px solid ${plan.highlight && plan.isDark ? 'var(--brand-green)' : 'var(--brand-border)'}; border-radius: 20px; padding: 32px; position: relative; transition: transform 0.2s;`}>
-                  {plan.highlight ? <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--brand-green); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10;">Most Suitable</div> : null}
-                  <div style={`font-size: 13px; font-weight: 700; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.6)' : 'var(--brand-text-muted)'}; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;`}>{plan.name}</div>
-                  <div style={`font-size: 32px; font-weight: 800; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'}; letter-spacing: -0.04em; margin-bottom: 4px;`}>{plan.price}</div>
-                  {plan.period ? <div style={`font-size: 12px; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.4)' : 'var(--brand-text-muted)'}; margin-bottom: 16px;`}>{plan.period}</div> : <div style="margin-bottom: 16px;"></div>}
-                  <div style={`font-size: 13px; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.5)' : 'var(--brand-text-muted)'}; margin-bottom: 24px; line-height: 1.5;`}>{plan.desc}</div>
-                  <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px;">
+                <div key={plan.name} style={`background: ${plan.highlight ? (plan.isDark ? 'var(--brand-bg-surface)' : 'var(--brand-bg-inverse)') : 'var(--brand-bg-surface)'}; border: 2.5px solid ${plan.highlight ? (plan.isDark ? 'var(--brand-green)' : 'var(--brand-bg-inverse)') : 'var(--brand-border)'}; border-radius: 24px; padding: 40px; position: relative; transition: all 0.3s ease; box-shadow: ${plan.highlight ? 'var(--brand-shadow)' : 'var(--brand-shadow-sm)'};`}
+                  onmouseover={(e: any) => { e.currentTarget.style.transform = 'translateY(-8px)'; }}
+                  onmouseout={(e: any) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+                >
+                  {plan.highlight ? <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--brand-green); color: #fff; font-size: 11px; font-weight: 800; padding: 5px 16px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.08em; z-index: 10; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);">Most Popular</div> : null}
+                  <div style={`font-size: 14px; font-weight: 800; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.6)' : 'var(--brand-text-muted)'}; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;`}>{plan.name}</div>
+                  <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px;">
+                    <div style={`font-size: 42px; font-weight: 900; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'}; letter-spacing: -0.05em;`}>{plan.price}</div>
+                    {plan.period ? <div style={`font-size: 15px; font-weight: 500; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.4)' : 'var(--brand-text-muted)'};`}>{plan.period}</div> : null}
+                  </div>
+                  <div style={`font-size: 15px; color: ${plan.highlight && !plan.isDark ? 'rgba(255,255,255,0.5)' : 'var(--brand-text-muted)'}; margin-bottom: 32px; line-height: 1.5; font-weight: 450;`}>{plan.desc}</div>
+                  
+                  <div style="height: 1px; background: var(--brand-border); width: 100%; margin-bottom: 32px; opacity: 0.5;"></div>
+
+                  <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 40px;">
                     {plan.features.map((feature: string) => (
-                      <div key={feature} style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 12px; color: var(--brand-green);">✓</span>
-                        <span style={`font-size: 13px; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'};`}>{feature}</span>
+                      <div key={feature} style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 18px; height: 18px; border-radius: 50%; background: rgba(16, 185, 129, 0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                          <span style="font-size: 10px; color: var(--brand-green); font-weight: 900;">✓</span>
+                        </div>
+                        <span style={`font-size: 14px; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-inverse)' : 'var(--brand-text-primary)'}; font-weight: 450;`}>{feature}</span>
                       </div>
                     ))}
                   </div>
                   <button
                     onclick={() => this.openWaitlist()}
-                    style={`width: 100%; padding: 12px; border-radius: 999px; border: ${plan.highlight && !plan.isDark ? 'none' : '1.5px solid var(--brand-border)'}; font-size: 14px; font-weight: 600; cursor: pointer; background: ${plan.highlight && !plan.isDark ? 'var(--brand-bg-surface)' : 'transparent'}; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-primary)' : 'var(--brand-text-body)'}; transition: all 0.15s;`}
-                    onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.8'; if(plan.highlight && plan.isDark) e.currentTarget.style.background = 'var(--brand-bg-subtle)'; }}
-                    onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; if(plan.highlight && plan.isDark) e.currentTarget.style.background = 'transparent'; }}
-                  >Get started</button>
+                    style={`width: 100%; padding: 14px; border-radius: 999px; border: ${plan.highlight && !plan.isDark ? 'none' : '2px solid var(--brand-border)'}; font-size: 15px; font-weight: 700; cursor: pointer; background: ${plan.highlight && !plan.isDark ? 'var(--brand-bg-surface)' : 'transparent'}; color: ${plan.highlight && !plan.isDark ? 'var(--brand-text-primary)' : 'var(--brand-text-body)'}; transition: all 0.2s ease;`}
+                    onmouseover={(e: any) => { e.currentTarget.style.background = plan.highlight && !plan.isDark ? '#fff' : 'var(--brand-bg-subtle)'; if(!plan.highlight || plan.isDark) e.currentTarget.style.borderColor = 'var(--brand-green)'; }}
+                    onmouseout={(e: any) => { e.currentTarget.style.background = plan.highlight && !plan.isDark ? 'var(--brand-bg-surface)' : 'transparent'; if(!plan.highlight || plan.isDark) e.currentTarget.style.borderColor = 'var(--brand-border)'; }}
+                  >{plan.name === 'Free' ? 'Get Started' : 'Join Waitlist'}</button>
                 </div>
               ))}
             </div>
+          </div>
+        </section>
 
             {/* Custom stretched short card for ENTERPRISE */}
             <div style={`max-width: 900px; margin: 0 auto; background: var(--brand-bg-surface); border: 2px solid var(--brand-border); border-radius: 20px; padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; gap: 32px;`}>
@@ -916,7 +906,8 @@ component LandingPage {
                     <button
                       onclick={() => this.submitWaitlist()}
                       disabled={this.submitting}
-                      style={`width: 100%; padding: 13px; border-radius: 999px; border: none; font-size: 15px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); cursor: ${this.submitting ? 'not-allowed' : 'pointer'}; opacity: ${this.submitting ? '0.6' : '1'}; transition: opacity 0.15s; font-family: inherit;`}
+                      class="btn-primary"
+                      style={`width: 100%; padding: 15px; border-radius: 999px; border: none; font-size: 16px; font-weight: 700; cursor: ${this.submitting ? 'not-allowed' : 'pointer'}; opacity: ${this.submitting ? '0.6' : '1'}; transition: all 0.2s ease; font-family: inherit;`}
                     >{this.submitting ? 'Joining…' : 'Join the Waitlist'}</button>
                   </div>
 
