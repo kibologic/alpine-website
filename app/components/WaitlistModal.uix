@@ -7,23 +7,49 @@ export class WaitlistModal extends SwissComponent {
     let submitting: boolean = false;
     let submitted: boolean = false;
     let emailError: string = '';
+    let serverError: string = '';
   }
 
   submitWaitlist() {
+    // Reset errors
+    this.emailError = '';
+    this.serverError = '';
+
     if (!this.email || !this.email.includes('@')) {
       this.emailError = 'Please enter a valid business email';
       this.scheduleUpdate();
       return;
     }
+    if (!this.category) {
+      this.emailError = 'Please select your business category';
+      this.scheduleUpdate();
+      return;
+    }
+
     this.submitting = true;
     this.scheduleUpdate();
     
     // Simulate API call
     setTimeout(() => {
       this.submitting = false;
-      this.submitted = true;
+      
+      // Simulation: email 'error@alpine.erp' triggers a server error
+      if (this.email === 'error@alpine.erp') {
+        this.serverError = 'This email is already registered on our waitlist.';
+      } else {
+        this.submitted = true;
+      }
+      
       this.scheduleUpdate();
     }, 1500);
+  }
+
+  resetForm() {
+    this.submitted = false;
+    this.serverError = '';
+    this.email = '';
+    this.category = '';
+    this.scheduleUpdate();
   }
 
   render() {
@@ -33,72 +59,102 @@ export class WaitlistModal extends SwissComponent {
 
     return (
       <div
-        style="position: fixed; inset: 0; background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(7px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 22px;"
+        style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 24px;"
         onclick={(e: any) => { if (e.target === e.currentTarget) onClose(); }}
       >
-        <div style="background: var(--brand-bg-surface); border-radius: 18px; width: 100%; max-width: 396px; padding: 36px; box-shadow: var(--brand-shadow); border: 1px solid var(--brand-border); position: relative;">
+        <div style="background: var(--brand-bg-surface); border-radius: 24px; width: 100%; max-width: 440px; padding: 48px; box-shadow: 0 40px 100px rgba(0,0,0,0.2); border: 1px solid var(--brand-border); position: relative; animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+
+          {/* Close Button */}
+          <button
+            onclick={() => onClose()}
+            style="position: absolute; top: 24px; right: 24px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--brand-border); background: transparent; color: var(--brand-text-muted); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10;"
+            onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; e.currentTarget.style.color = 'var(--brand-navy)'; }}
+            onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--brand-text-muted)'; }}
+          >✕</button>
 
           {this.submitted ? (
-            <div style="text-align: center; padding: 14px 0;">
-              <div style="width: 47px; height: 47px; background: var(--brand-bg-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 20px; color: var(--brand-green);">✓</div>
-              <h3 style="font-size: 18px; font-weight: 700; color: var(--brand-text-primary); margin-bottom: 9px; letter-spacing: -0.02em;">You're on the list.</h3>
-              <p style="font-size: 13px; color: var(--brand-text-muted); line-height: 1.6;">We'll reach out when your spot is ready. Keep building something great.</p>
+            /* SUCCESS STATE */
+            <div style="text-align: center; padding: 20px 0; animation: modalIn 0.5s ease-out;">
+              <div style="width: 64px; height: 64px; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; border: 2px solid var(--brand-green);">
+                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand-green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <h3 style="font-size: 26px; font-weight: 800; color: var(--brand-navy); margin-bottom: 12px; letter-spacing: -0.04em;">You're in.</h3>
+              <p style="font-size: 15px; color: var(--brand-text-body); line-height: 1.6; margin-bottom: 32px;">
+                 Thank you for joining the Alpine waitlist. We've sent a confirmation to <strong style="color: var(--brand-navy);">{this.email}</strong>. 
+                 <br/><br/>
+                 Keep an eye on your inbox for your early access invitation.
+              </p>
               <button
-                onclick={() => onClose()}
-                style="margin-top: 25px; font-size: 13px; font-weight: 600; color: var(--brand-text-inverse); background: var(--brand-bg-inverse); border: none; padding: 11px 25px; border-radius: 719px; cursor: pointer; width: 100%; transition: opacity 0.15s;"
-                onmouseover={(e: any) => { e.currentTarget.style.opacity = '0.82'; }}
-                onmouseout={(e: any) => { e.currentTarget.style.opacity = '1'; }}
-              >Close</button>
+                onclick={() => { this.resetForm(); onClose(); }}
+                class="btn btn-primary"
+                style="width: 100%;"
+              >Done</button>
             </div>
           ) : (
+            /* FORM OR ERROR STATE */
             <div>
-              <button
-                onclick={() => onClose()}
-                style="position: absolute; top: 18px; right: 18px; width: 29px; height: 29px; border-radius: 50%; border: 1px solid var(--brand-border); background: transparent; color: var(--brand-text-muted); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;"
-                onmouseover={(e: any) => { e.currentTarget.style.background = 'var(--brand-bg-subtle)'; e.currentTarget.style.color = 'var(--brand-text-primary)'; }}
-                onmouseout={(e: any) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--brand-text-muted)'; }}
-              >✕</button>
+              <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-green-light) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">
+                 <span style="color: #fff; font-size: 18px; font-weight: 900;">A</span>
+              </div>
 
-              <h3 style="font-size: 20px; font-weight: 800; color: var(--brand-text-primary); margin-bottom: 7px; letter-spacing: -0.03em;">Get early access</h3>
-              <p style="font-size: 13px; color: var(--brand-text-muted); line-height: 1.55; margin-bottom: 25px;">
-                Alpine is in private beta. Choose your category and we’ll reach out when your spot opens.
+              <h3 style="font-size: 28px; font-weight: 800; color: var(--brand-navy); margin-bottom: 8px; letter-spacing: -0.04em;">Join the waitlist</h3>
+              <p style="font-size: 15px; color: var(--brand-text-body); line-height: 1.6; margin-bottom: 32px;">
+                Secure your spot for the June 1st launch. We'll invite users in batches based on category.
               </p>
 
-              <div style="display: flex; flex-direction: column; gap: 9px;">
-                <select
-                  value={this.category}
-                  onchange={(e: any) => { this.category = e.target.value; this.scheduleUpdate?.(); }}
-                  style="width: 100%; padding: 12px 14px; border-radius: 9px; border: 1.5px solid var(--brand-border); font-size: 14px; color: var(--brand-text-primary); background: var(--brand-bg-surface); outline: none; transition: border-color 0.15s; font-family: inherit;"
-                  onfocus={(e: any) => { e.target.style.borderColor = 'var(--brand-green)'; }}
-                  onblur={(e: any) => { e.target.style.borderColor = 'var(--brand-border)'; }}
-                >
-                  <option value="">Select your category…</option>
-                  <option value="business">Business</option>
-                  <option value="startup">Startup</option>
-                  <option value="solo_seller">Solo Seller</option>
-                </select>
-                <input
-                  type="email"
-                  placeholder="you@company.com"
-                  value={this.email}
-                  oninput={(e: any) => { this.email = e.target.value; this.emailError = ''; this.scheduleUpdate?.(); }}
-                  onkeydown={(e: any) => { if (e.key === 'Enter') this.submitWaitlist(); }}
-                  style={`width: 100%; padding: 12px 14px; border-radius: 9px; border: 1.5px solid ${this.emailError ? '#dc2626' : 'var(--brand-border)'}; font-size: 14px; color: var(--brand-text-primary); background: var(--brand-bg-surface); outline: none; transition: border-color 0.15s; font-family: inherit;`}
-                  onfocus={(e: any) => { e.target.style.borderColor = 'var(--brand-green)'; }}
-                  onblur={(e: any) => { e.target.style.borderColor = this.emailError ? '#dc2626' : 'var(--brand-border)'; }}
-                />
+              {this.serverError ? (
+                /* SERVER ERROR MESSAGE */
+                <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 24px; display: flex; gap: 12px; align-items: center;">
+                   <div style="width: 20px; height: 20px; border-radius: 50%; background: #ef4444; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; font-size: 12px; font-weight: 900;">!</div>
+                   <span style="font-size: 13px; color: #b91c1c; font-weight: 600;">{this.serverError}</span>
+                </div>
+              ) : null}
+
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                   <label style="display: block; font-size: 11px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Business Type</label>
+                   <select
+                     value={this.category}
+                     onchange={(e: any) => { this.category = e.target.value; this.emailError = ''; this.serverError = ''; this.scheduleUpdate?.(); }}
+                     style="width: 100%; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--brand-border); font-size: 15px; color: var(--brand-navy); background: var(--brand-bg-surface); outline: none; transition: all 0.2s; font-family: inherit; appearance: none; cursor: pointer;"
+                     onfocus={(e: any) => { e.target.style.borderColor = 'var(--brand-green)'; e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.1)'; }}
+                     onblur={(e: any) => { e.target.style.borderColor = 'var(--brand-border)'; e.target.style.boxShadow = 'none'; }}
+                   >
+                     <option value="">Select your role…</option>
+                     <option value="developer">Developer</option>
+                     <option value="entrepreneur">Entrepreneur</option>
+                     <option value="solo_seller">Solo Seller / Retailer</option>
+                     <option value="retail_chain">Large Retail Chain</option>
+                   </select>
+                </div>
+
+                <div>
+                   <label style="display: block; font-size: 11px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Business Email</label>
+                   <input
+                     type="email"
+                     placeholder="name@company.com"
+                     value={this.email}
+                     oninput={(e: any) => { this.email = e.target.value; this.emailError = ''; this.serverError = ''; this.scheduleUpdate?.(); }}
+                     onkeydown={(e: any) => { if (e.key === 'Enter') this.submitWaitlist(); }}
+                     style={`width: 100%; padding: 14px 16px; border-radius: 12px; border: 1.5px solid ${this.emailError ? '#ef4444' : 'var(--brand-border)'}; font-size: 15px; color: var(--brand-navy); background: var(--brand-bg-surface); outline: none; transition: all 0.2s; font-family: inherit;`}
+                     onfocus={(e: any) => { e.target.style.borderColor = 'var(--brand-green)'; e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.1)'; }}
+                     onblur={(e: any) => { e.target.style.borderColor = this.emailError ? '#ef4444' : 'var(--brand-border)'; e.target.style.boxShadow = 'none'; }}
+                   />
+                </div>
+
                 {this.emailError ? (
-                  <span style="font-size: 11px; color: #dc2626;">{this.emailError}</span>
+                  <span style="font-size: 12px; color: #ef4444; font-weight: 500;">{this.emailError}</span>
                 ) : null}
+
                 <button
                   onclick={() => this.submitWaitlist()}
                   disabled={this.submitting}
-                  class="btn-primary"
-                  style={`width: 100%; padding: 14px; border-radius: 719px; border: none; font-size: 14px; font-weight: 700; cursor: ${this.submitting ? 'not-allowed' : 'pointer'}; opacity: ${this.submitting ? '0.6' : '1'}; transition: all 0.2s ease; font-family: inherit;`}
+                  class="btn btn-primary"
+                  style={`width: 100%; padding: 16px; margin-top: 8px; opacity: ${this.submitting ? '0.7' : '1'}; cursor: ${this.submitting ? 'not-allowed' : 'pointer'};`}
                 >{this.submitting ? 'Joining…' : 'Join the Waitlist'}</button>
               </div>
 
-              <p style="text-align: center; font-size: 11px; color: var(--brand-text-muted); margin-top: 14px; opacity: 0.8;">No spam, ever. Unsubscribe anytime.</p>
+              <p style="text-align: center; font-size: 11px; color: var(--brand-text-muted); margin-top: 24px; opacity: 0.7;">Join 1,200+ retailers already in the queue.</p>
             </div>
           )}
         </div>

@@ -1,6 +1,33 @@
 import { SwissComponent } from '@kibologic/core';
 
 export class Hero extends SwissComponent {
+  state {
+    let timeLeft: string = '';
+  }
+
+  onMount() {
+    this.updateCountdown();
+    const timer = setInterval(() => this.updateCountdown(), 1000);
+    return () => clearInterval(timer);
+  }
+
+  updateCountdown() {
+    const targetDate = new Date('June 1, 2026 00:00:00').getTime();
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+    if (distance < 0) {
+      this.timeLeft = "Launching Now";
+    } else {
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      this.timeLeft = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+    this.scheduleUpdate();
+  }
+
   render() {
     const { openWaitlist, theme } = this.props;
 
@@ -10,10 +37,10 @@ export class Hero extends SwissComponent {
           
           {/* Hero Copy (Left) */}
           <div style="display: flex; flex-direction: column; gap: 29px;">
-            <div style="display: inline-flex; align-items: center; gap: 9px; background: rgba(45, 122, 58, 0.08); padding: 7px 18px; border-radius: 899px; width: fit-content; border: 1px solid rgba(45, 122, 58, 0.15);">
-               <span style="font-size: 11px; font-weight: 800; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.1em;">Now Global</span>
-               <div style="width: 4px; height: 4px; border-radius: 50%; background: var(--brand-green);"></div>
-               <span style="font-size: 11px; font-weight: 600; color: var(--brand-text-muted);">v2.4 Live</span>
+            <div style="display: inline-flex; align-items: center; gap: 11px; background: rgba(45, 122, 58, 0.08); padding: 7px 18px; border-radius: 899px; width: fit-content; border: 1px solid rgba(45, 122, 58, 0.15);">
+               <span style="font-size: 11px; font-weight: 800; color: var(--brand-green); text-transform: uppercase; letter-spacing: 0.12em;">Next Release</span>
+               <div style="width: 4px; height: 4px; border-radius: 50%; background: var(--brand-green); animation: pulse 2s infinite;"></div>
+               <span style="font-size: 11px; font-weight: 700; color: var(--brand-navy); font-family: monospace;">{this.timeLeft}</span>
             </div>
 
             <h1 style="font-size: clamp(43px, 6vw, 61px); font-weight: 800; color: var(--brand-navy); line-height: 1.05; letter-spacing: -0.04em;">
@@ -25,8 +52,7 @@ export class Hero extends SwissComponent {
             </p>
 
             <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-               <button onclick={() => openWaitlist()} class="btn btn-primary">Get started for free</button>
-               <button onclick={() => openWaitlist()} class="btn btn-ghost">Request Demo</button>
+               <button onclick={() => openWaitlist()} class="btn btn-primary">Join Waitlist</button>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 14px;">
@@ -176,6 +202,7 @@ export class Hero extends SwissComponent {
         
         {/* Background Radial Glow */}
         <div style="position: absolute; top: -180px; right: -180px; width: 540px; height: 540px; background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%); z-index: 1; pointer-events: none;"></div>
+        
       </section>
     );
   }

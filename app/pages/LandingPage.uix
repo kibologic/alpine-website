@@ -77,12 +77,11 @@ export default class LandingPage extends SwissComponent {
 
         <Footer />
 
-        {this.waitlistOpen ? (
-          <WaitlistModal 
-            theme={this.theme} 
-            close={() => this.closeWaitlist()} 
-          />
-        ) : null}
+        <WaitlistModal 
+          isOpen={this.waitlistOpen}
+          theme={this.theme} 
+          onClose={() => this.closeWaitlist()} 
+        />
       </div>
     );
   }

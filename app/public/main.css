@@ -180,6 +180,17 @@ h1, h2, h3, h4 {
 }
 
 .alp-mock-shell { height: 468px; }
-@media (max-width: 774px) {
-  .alp-mock-shell { height: 378px; }
+@media (max-width: 378px) {
+  .alp-mock-shell { height: 342px; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+@keyframes modalIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }

@@ -38,7 +38,7 @@ export class Pricing extends SwissComponent {
                     </div>
                   ))}
                 </div>
-                <button onclick={() => openWaitlist()} class="btn btn-ghost" style="width: 100%; border-radius: 899px;">{plan.name === 'Free' ? 'Get Started' : 'Join Waitlist'}</button>
+                <button onclick={() => openWaitlist()} class="btn btn-ghost" style="width: 100%; border-radius: 899px;">Join Waitlist</button>
               </div>
             ))}
           </div>
@@ -49,7 +49,7 @@ export class Pricing extends SwissComponent {
               <div style="font-size: 12px; font-weight: 700; color: var(--brand-text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">Enterprise</div>
               <div style="font-size: 13px; color: var(--brand-text-body); max-width: 450px; line-height: 1.5;">Remove all limits. Dedicated infrastructure, custom volume pricing, SLA guarantees, and 24/7 VIP support for massive deployments.</div>
             </div>
-            <button onclick={() => openWaitlist()} style={`white-space: nowrap; padding: 11px 29px; border-radius: 899px; border: 1.4px solid var(--brand-border); background: transparent; color: var(--brand-text-primary); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s;`} onmouseover={(e: any) => e.currentTarget.style.background = 'var(--brand-bg-subtle)'} onmouseout={(e: any) => e.currentTarget.style.background = 'transparent'}>Contact Sales</button>
+            <button onclick={() => openWaitlist()} style={`white-space: nowrap; padding: 11px 29px; border-radius: 899px; border: 1.4px solid var(--brand-border); background: transparent; color: var(--brand-text-primary); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s;`} onmouseover={(e: any) => e.currentTarget.style.background = 'var(--brand-bg-subtle)'} onmouseout={(e: any) => e.currentTarget.style.background = 'transparent'}>Join Waitlist</button>
           </div>
         </div>
       </section>
