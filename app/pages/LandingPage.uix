@@ -542,13 +542,13 @@ component LandingPage {
 
           {/* Headline */}
           <h1 style="font-size: clamp(48px, 8vw, 82px); font-weight: 900; color: var(--brand-navy); line-height: 0.95; letter-spacing: -0.04em; margin-bottom: 28px; max-width: 960px; margin-left: auto; margin-right: auto;">
-            The most robust OS for<br />
+            The OS for<br />
             modern African retail.
           </h1>
 
           {/* Subheadline */}
           <p style="font-size: 20px; font-weight: 450; color: var(--brand-text-muted); line-height: 1.6; max-width: 680px; margin: 0 auto 48px; letter-spacing: -0.01em;">
-            Mission-critical POS, intelligent inventory, and multi-till management. Built for high-reliability trade in a single, unified platform.
+            Alpine unifies Point of Sale, inventory, and team management into a single, high-reliability platform built for the unique demands of regional trade.
           </p>
 
           {/* CTAs */}
