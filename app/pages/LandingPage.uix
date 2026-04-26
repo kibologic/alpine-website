@@ -813,7 +813,7 @@ component LandingPage {
             {[
               { name: 'Payments', items: ['Visa/Mastercard', 'PayChangu', 'One Khusa', 'Mobile Money', 'Cash Drawer'] },
               { name: 'Accounting', items: ['QuickBooks', 'Sage', 'Xero', 'Alpine Accounting (coming soon)'] },
-              { name: 'Fiscal', items: ['Malawi MRA EFDs', 'ZIMRA e-Invoice', 'KRA eTIMS', 'ZRAU Fiscalisation'] },
+              { name: 'Fiscal', items: ['Malawi MRA EIS', 'ZIMRA e-Invoice', 'KRA eTIMS', 'ZRAU Fiscalisation'] },
               { name: 'Operations', items: ['Supplier EDI', 'Excel / CSV', 'REST API', 'Webhooks'] },
             ].map((cat: any) => (
               <div key={cat.name} style="background: var(--brand-bg-surface); border: 1px solid var(--brand-border); border-radius: 16px; padding: 24px;">
