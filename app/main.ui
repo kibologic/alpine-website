@@ -1,24 +1,19 @@
-import { mount, Signal } from '@kibologic/core';
+import { mount, Signal, createElement, Fragment } from '@kibologic/core';
 import LandingPage from './pages/LandingPage.uix';
+import FeaturesPage from './pages/FeaturesPage.uix';
+import PricingPage from './pages/PricingPage.uix';
+import IntegrationsPage from './pages/IntegrationsPage.uix';
+import AboutPage from './pages/AboutPage.uix';
+import ChangelogPage from './pages/ChangelogPage.uix';
+
+globalThis.createElement = createElement;
+globalThis.Fragment = Fragment;
 
 const route$ = new Signal(window.location.pathname);
 
-const handleScroll = (path: string) => {
-  if (path === '/' || path === '') {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    return;
-  }
-  const id = path.startsWith('/') ? path.substring(1) : path;
-  const el = document.getElementById(id);
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth' });
-  }
-};
-
 window.addEventListener('popstate', () => {
-  const path = window.location.pathname;
-  route$.value = path;
-  handleScroll(path);
+  route$.value = window.location.pathname;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 // Global internal link interceptor
@@ -30,12 +25,19 @@ document.addEventListener('click', (e: any) => {
       e.preventDefault();
       history.pushState(null, '', path);
       route$.value = path;
-      handleScroll(path);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 });
 
-// Initial scroll handling
-setTimeout(() => handleScroll(window.location.pathname), 100);
+function Router() {
+  const path = route$.value;
+  if (path === '/features') return <FeaturesPage />;
+  if (path === '/pricing') return <PricingPage />;
+  if (path === '/integrations') return <IntegrationsPage />;
+  if (path === '/about') return <AboutPage />;
+  if (path === '/changelog') return <ChangelogPage />;
+  return <LandingPage />;
+}
 
-mount(LandingPage, document.getElementById('app'));
+mount(Router, document.getElementById('app'));
