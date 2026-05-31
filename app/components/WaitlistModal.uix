@@ -1,6 +1,4 @@
-import { SwissComponent } from '@kibologic/core';
-
-export class WaitlistModal extends SwissComponent {
+export component WaitlistModal {
   state {
     let email: string = '';
     let category: string = '';
