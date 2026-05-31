@@ -1,4 +1,4 @@
-export component Testimonials {
+component Testimonials {
   render() {
     return (
       <section class="section-padding" style="background: var(--brand-bg-page);">

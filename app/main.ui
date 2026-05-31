@@ -1,10 +1,10 @@
 import { mount, Signal, createElement, Fragment } from '@kibologic/core';
-import LandingPage from './pages/LandingPage.uix';
-import FeaturesPage from './pages/FeaturesPage.uix';
-import PricingPage from './pages/PricingPage.uix';
-import IntegrationsPage from './pages/IntegrationsPage.uix';
-import AboutPage from './pages/AboutPage.uix';
-import ChangelogPage from './pages/ChangelogPage.uix';
+import { LandingPage } from './pages/LandingPage.uix';
+import { FeaturesPage } from './pages/FeaturesPage.uix';
+import { PricingPage } from './pages/PricingPage.uix';
+import { IntegrationsPage } from './pages/IntegrationsPage.uix';
+import { AboutPage } from './pages/AboutPage.uix';
+import { ChangelogPage } from './pages/ChangelogPage.uix';
 
 globalThis.createElement = createElement;
 globalThis.Fragment = Fragment;

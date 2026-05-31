@@ -2,7 +2,7 @@ import { Navbar } from '../components/Navbar.uix';
 import { Footer } from '../components/Footer.uix';
 import { WaitlistModal } from '../components/WaitlistModal.uix';
 
-export default component AboutPage {
+component AboutPage {
   state {
     let theme: string = 'light';
     let waitlistOpen: boolean = false;

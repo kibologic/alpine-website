@@ -1,4 +1,4 @@
-export component ProblemSolution {
+component ProblemSolution {
   render() {
     return (
       <section class="section-padding" style="background: var(--brand-bg-surface);">

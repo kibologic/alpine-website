@@ -1,4 +1,4 @@
-export component Footer {
+component Footer {
   render() {
     return (
       <footer style="background: var(--brand-navy-dark); padding: 29px;">
