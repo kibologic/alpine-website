@@ -1,4 +1,4 @@
-export component Pricing {
+component Pricing {
   render() {
     const { theme, openWaitlist } = this.props;
 

@@ -11,7 +11,7 @@ import { About } from '../components/landing/About.uix';
 import { Testimonials } from '../components/landing/Testimonials.uix';
 import { WaitlistModal } from '../components/WaitlistModal.uix';
 
-export default component LandingPage {
+component LandingPage {
   state {
     let theme: string = 'light';
     let waitlistOpen: boolean = false;
