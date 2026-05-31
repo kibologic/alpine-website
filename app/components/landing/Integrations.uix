@@ -1,6 +1,4 @@
-import { SwissComponent } from '@kibologic/core';
-
-export class Integrations extends SwissComponent {
+export component Integrations {
   render() {
     return (
       <section id="integrations" style="padding: 86px 29px; max-width: 1044px; margin: 0 auto;">

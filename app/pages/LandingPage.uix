@@ -1,4 +1,4 @@
-import { SwissComponent } from '@kibologic/core';
+import { Signal } from '@kibologic/core';
 import { Navbar } from '../components/Navbar.uix';
 import { Footer } from '../components/Footer.uix';
 import { Hero } from '../components/landing/Hero.uix';
@@ -11,26 +11,26 @@ import { About } from '../components/landing/About.uix';
 import { Testimonials } from '../components/landing/Testimonials.uix';
 import { WaitlistModal } from '../components/WaitlistModal.uix';
 
-export default class LandingPage extends SwissComponent {
+export default component LandingPage {
   state {
     let theme: string = 'light';
     let waitlistOpen: boolean = false;
     let activeSection: string = 'home';
   }
 
-  toggleTheme() {
+  _toggleTheme() {
     this.theme = this.theme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', this.theme);
     localStorage.setItem('alpine-theme', this.theme);
     this.scheduleUpdate();
   }
 
-  openWaitlist() {
+  _openWaitlist() {
     this.waitlistOpen = true;
     this.scheduleUpdate();
   }
 
-  closeWaitlist() {
+  _closeWaitlist() {
     this.waitlistOpen = false;
     this.scheduleUpdate();
   }
@@ -57,19 +57,20 @@ export default class LandingPage extends SwissComponent {
   render() {
     return (
       <div style="min-height: 100vh; display: flex; flex-direction: column;">
-        <Navbar 
-          theme={this.theme} 
-          toggleTheme={() => this.toggleTheme()} 
-          openWaitlist={() => this.openWaitlist()} 
+        <Navbar
+          theme={this.theme}
+          toggleTheme={() => this._toggleTheme()}
+          openWaitlist={() => this._openWaitlist()}
           activeSection={this.activeSection}
+          activePage=""
         />
-        
+
         <main style="flex: 1;">
-          <Hero openWaitlist={() => this.openWaitlist()} />
+          <Hero openWaitlist={() => this._openWaitlist()} />
           <SocialProof />
           <ProblemSolution />
           <FeatureGrid />
-          <Pricing theme={this.theme} openWaitlist={() => this.openWaitlist()} />
+          <Pricing theme={this.theme} openWaitlist={() => this._openWaitlist()} />
           <Integrations />
           <Testimonials />
           <About />
@@ -77,10 +78,10 @@ export default class LandingPage extends SwissComponent {
 
         <Footer />
 
-        <WaitlistModal 
+        <WaitlistModal
           isOpen={this.waitlistOpen}
-          theme={this.theme} 
-          onClose={() => this.closeWaitlist()} 
+          theme={this.theme}
+          onClose={() => this._closeWaitlist()}
         />
       </div>
     );

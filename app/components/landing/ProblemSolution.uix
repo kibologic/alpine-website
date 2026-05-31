@@ -1,6 +1,4 @@
-import { SwissComponent } from '@kibologic/core';
-
-export class ProblemSolution extends SwissComponent {
+export component ProblemSolution {
   render() {
     return (
       <section class="section-padding" style="background: var(--brand-bg-surface);">

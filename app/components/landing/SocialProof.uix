@@ -1,6 +1,4 @@
-import { SwissComponent } from '@kibologic/core';
-
-export class SocialProof extends SwissComponent {
+export component SocialProof {
   render() {
     return (
       <section style="padding: 72px 29px 90px; text-align: center;">
