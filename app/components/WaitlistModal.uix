@@ -97,7 +97,7 @@ export component WaitlistModal {
 
               <h3 style="font-size: 28px; font-weight: 800; color: var(--brand-navy); margin-bottom: 8px; letter-spacing: -0.04em;">Join the waitlist</h3>
               <p style="font-size: 15px; color: var(--brand-text-body); line-height: 1.6; margin-bottom: 32px;">
-                Secure your spot for the June 1st launch. We'll invite users in batches based on category.
+                Secure your spot for the July 1st launch. We'll invite users in batches based on category.
               </p>
 
               {this.serverError ? (
