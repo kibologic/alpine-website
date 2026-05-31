@@ -1,4 +1,4 @@
-export component FeatureGrid {
+component FeatureGrid {
   render() {
     const features = [
       {

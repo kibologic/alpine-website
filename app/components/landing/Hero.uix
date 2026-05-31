@@ -1,4 +1,4 @@
-export component Hero {
+component Hero {
   state {
     let timeLeft: string = '';
   }

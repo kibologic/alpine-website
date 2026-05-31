@@ -1,6 +1,6 @@
 import { Signal } from '@kibologic/core';
 
-export component Navbar {
+component Navbar {
   state {
     let mobileMenuOpen: boolean = false;
   }
