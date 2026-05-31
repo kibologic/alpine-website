@@ -1,6 +1,4 @@
-import { SwissComponent } from '@kibologic/core';
-
-export class Testimonials extends SwissComponent {
+export component Testimonials {
   render() {
     return (
       <section class="section-padding" style="background: var(--brand-bg-page);">

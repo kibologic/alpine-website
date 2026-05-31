@@ -1,6 +1,4 @@
-import { SwissComponent } from '@kibologic/core';
-
-export class FeatureGrid extends SwissComponent {
+export component FeatureGrid {
   render() {
     const features = [
       {

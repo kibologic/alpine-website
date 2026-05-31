@@ -1,22 +1,40 @@
-import { SwissComponent } from '@kibologic/core';
+import { Signal } from '@kibologic/core';
 
-export class Navbar extends SwissComponent {
+export component Navbar {
   state {
     let mobileMenuOpen: boolean = false;
   }
 
-  toggleMobileMenu() {
+  _toggleMobileMenu() {
     this.mobileMenuOpen = !this.mobileMenuOpen;
     this.scheduleUpdate();
   }
 
+  _isActive(id: string, href: string) {
+    const { activeSection, activePage } = this.props;
+    // For multi-page routing: activePage is the current pathname e.g. '/features'
+    if (activePage !== undefined && activePage !== '') {
+      return activePage === href;
+    }
+    // For single-page landing: use scroll-based activeSection
+    return activeSection === id;
+  }
+
   render() {
-    const { theme, toggleTheme, openWaitlist, activeSection } = this.props;
+    const { theme, toggleTheme, openWaitlist, activeSection, activePage } = this.props;
+
+    const navLinks = [
+      ['Features', '/features', 'features'],
+      ['Pricing', '/pricing', 'pricing'],
+      ['Integrations', '/integrations', 'integrations'],
+      ['Changelog', '/changelog', 'changelog'],
+      ['About', '/about', 'about'],
+    ];
 
     return (
-      <nav style="background: var(--brand-bg-page); transition: all 0.3s ease; border-bottom: 1px solid var(--brand-border);">
+      <nav style="background: var(--brand-bg-page); transition: all 0.3s ease; border-bottom: 1px solid var(--brand-border); position: sticky; top: 0; z-index: 100;">
         <div class="container" style="height: 72px; display: flex; align-items: center;">
-          
+
           {/* Logo */}
           <a href="/" style="display: flex; align-items: center; gap: 11px; text-decoration: none; transition: transform 0.2s;" onmouseover={(e: any) => e.currentTarget.style.transform = 'scale(1.02)'} onmouseout={(e: any) => e.currentTarget.style.transform = 'scale(1)'}>
             <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-green-light) 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);">
@@ -27,16 +45,19 @@ export class Navbar extends SwissComponent {
 
           {/* Center links (Desktop-only) */}
           <div class="desktop-only" style="align-items: center; gap: 32px; margin-left: 43px;">
-            {[['Features', '/features', 'features'], ['Pricing', '/pricing', 'pricing'], ['Integrations', '/integrations', 'integrations'], ['About', '/about', 'about']].map(([label, href, id]: [string, string, string]) => (
-              <a key={label} href={href}
-                style={`font-size: 13px; font-weight: 600; color: ${activeSection === id ? 'var(--brand-green)' : 'var(--brand-text-muted)'}; text-decoration: none; transition: all 0.2s ease; position: relative; padding: 4px 0;`}
-                onmouseover={(e: any) => { e.currentTarget.style.color = 'var(--brand-green)'; }}
-                onmouseout={(e: any) => { e.currentTarget.style.color = activeSection === id ? 'var(--brand-green)' : 'var(--brand-text-muted)'; }}
-              >
-                {label}
-                {activeSection === id ? <div style="position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--brand-green); border-radius: 2px;"></div> : null}
-              </a>
-            ))}
+            {navLinks.map(([label, href, id]: [string, string, string]) => {
+              const active = this._isActive(id, href);
+              return (
+                <a key={label} href={href}
+                  style={`font-size: 13px; font-weight: 600; color: ${active ? 'var(--brand-green)' : 'var(--brand-text-muted)'}; text-decoration: none; transition: all 0.2s ease; position: relative; padding: 4px 0;`}
+                  onmouseover={(e: any) => { e.currentTarget.style.color = 'var(--brand-green)'; }}
+                  onmouseout={(e: any) => { e.currentTarget.style.color = active ? 'var(--brand-green)' : 'var(--brand-text-muted)'; }}
+                >
+                  {label}
+                  {active ? <div style="position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--brand-green); border-radius: 2px;"></div> : null}
+                </a>
+              );
+            })}
           </div>
 
           {/* Right actions */}
@@ -60,7 +81,7 @@ export class Navbar extends SwissComponent {
 
             <button
               class="mobile-only"
-              onclick={() => this.toggleMobileMenu()}
+              onclick={() => this._toggleMobileMenu()}
               style="width: 32px; height: 32px; border-radius: 7px; border: none; background: transparent; color: var(--brand-text-primary); cursor: pointer; align-items: center; justify-content: center;"
             >☰</button>
           </div>
@@ -69,14 +90,14 @@ export class Navbar extends SwissComponent {
           {this.mobileMenuOpen ? (
             <div style="position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; background: var(--brand-bg-page); padding: 36px 29px;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px;">
-                 <span style="font-size: 14px; font-weight: 800;">Alpine</span>
-                 <button onclick={() => this.toggleMobileMenu()} style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+                <span style="font-size: 14px; font-weight: 800;">Alpine</span>
+                <button onclick={() => this._toggleMobileMenu()} style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
               </div>
               <div style="display: flex; flex-direction: column; gap: 22px;">
-                {['Features', 'Pricing', 'Integrations', 'About'].map(label => (
-                  <a key={label} href={`/${label.toLowerCase()}`} onclick={() => this.toggleMobileMenu()} style="font-size: 18px; font-weight: 600; text-decoration: none; color: var(--brand-text-primary);">{label}</a>
+                {navLinks.map(([label, href]: [string, string]) => (
+                  <a key={label} href={href} onclick={() => this._toggleMobileMenu()} style="font-size: 18px; font-weight: 600; text-decoration: none; color: var(--brand-text-primary);">{label}</a>
                 ))}
-                <button onclick={() => { this.toggleMobileMenu(); openWaitlist(); }} class="btn btn-primary" style="margin-top: 14px;">Join Waitlist</button>
+                <button onclick={() => { this._toggleMobileMenu(); openWaitlist(); }} class="btn btn-primary" style="margin-top: 14px;">Join Waitlist</button>
               </div>
             </div>
           ) : null}

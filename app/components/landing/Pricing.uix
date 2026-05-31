@@ -1,6 +1,4 @@
-import { SwissComponent } from '@kibologic/core';
-
-export class Pricing extends SwissComponent {
+export component Pricing {
   render() {
     const { theme, openWaitlist } = this.props;
 
