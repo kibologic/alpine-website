@@ -1,3 +1,4 @@
+import { SwissComponent } from '@kibologic/core';
 component Pricing {
   render() {
     const { theme, openWaitlist } = this.props;

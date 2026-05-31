@@ -1,3 +1,4 @@
+import { SwissComponent } from '@kibologic/core';
 component Footer {
   render() {
     return (
