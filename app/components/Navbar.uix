@@ -1,4 +1,4 @@
-import { SwissComponent, Signal } from '@kibologic/core';
+import { SwissComponent, Signal } from '@swissjs/core';
 
 component Navbar {
   state {

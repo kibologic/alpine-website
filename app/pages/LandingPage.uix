@@ -1,4 +1,4 @@
-import { SwissComponent, Signal } from '@kibologic/core';
+import { SwissComponent, Signal } from '@swissjs/core';
 import { Navbar } from '../components/Navbar.uix';
 import { Footer } from '../components/Footer.uix';
 import { Hero } from '../components/landing/Hero.uix';

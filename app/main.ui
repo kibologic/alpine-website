@@ -1,4 +1,4 @@
-import { mount, Signal, createElement, Fragment } from '@kibologic/core';
+import { mount, Signal, createElement, Fragment } from '@swissjs/core';
 import { LandingPage } from './pages/LandingPage.uix';
 import { FeaturesPage } from './pages/FeaturesPage.uix';
 import { PricingPage } from './pages/PricingPage.uix';
